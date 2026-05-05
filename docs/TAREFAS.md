@@ -1,76 +1,76 @@
-# InkFlowCare Mobile — Tarefas Restantes
+# InkFlowCare — Status do Projeto
 
-## ✅ Pronto
-- Autenticação JWT com AsyncStorage
-- Hooks de integração backend (useCicatrizacao, useChecklist, useCaminho)
-- Dashboard com progresso e checklist funcional
-- Caminho estilo Duolingo com navegação
-- Tela de detalhes do dia com checklist por período
-- Perfil com dados do usuário
-- Design system completo (#0e0e0e, #ff8d8c, #262626)
-- Navegação 4 tabs (grid, bandage, document, person)
+## ✅ Mobile (Frontend) — COMPLETO
 
----
+### Telas
+- [x] Login com JWT + AsyncStorage
+- [x] Dashboard (card ativo, lembretes, checklist)
+- [x] Recovery Progress (caminho Duolingo, nós, zigzag)
+- [x] Guia de Cuidados (4 fases, checklist por período, FAQ)
+- [x] Perfil (stats, badges, tatuagens, toggles, logout)
+- [x] Tela dia/[numero] (resumo XP/estrelas, checklist, dicas)
+- [x] Tela quiz/[diaId] (perguntas, feedback, resultado, XP)
 
-## 🚧 Backlog (por prioridade)
+### Hooks
+- [x] `useCicatrizacao` — cicatrização ativa
+- [x] `useChecklist` — checklist diário + toggle
+- [x] `useCaminho` — checkpoints do caminho
+- [x] `useNotifications` — preferências de notificação
+- [x] `useBadges` — conquistas (9 badges mockados)
+- [x] `useFotos` — upload com image picker
+- [x] `useEstatisticas` — XP, streak, taxa conclusão
+- [x] `useQuiz` — perguntas + verificação + XP
 
-### 1️⃣ Melhorias na tela dia/[numero] — PRIORIDADE ALTA
-- [ ] Header fixo com voltar e título "Dia X"
-- [ ] Card de resumo (XP, estrelas, status)
-- [ ] Seção dicas do dia (`GET /api/dicas/dia/{numeroDia}`)
-- [ ] Botão quiz se `temQuiz === true`
-- [ ] Botão "📷 Adicionar Foto"
-
-### 2️⃣ Notificações Locais — PRIORIDADE ALTA
-- [ ] Instalar `expo-notifications` + `expo-device`
-- [ ] Criar `hooks/useNotifications.ts`
-- [ ] Agendar 3 notificações diárias (manhã, tarde, noite)
-- [ ] Toggle em perfil.tsx + modal TimePicker
-- [ ] Sincronizar com backend (`GET/PUT /api/notificacoes/usuario/{id}`)
-
-### 3️⃣ Sistema de Badges — PRIORIDADE MÉDIA
-- [ ] Criar `hooks/useBadges.ts` (`GET /api/badges/usuario/{id}`)
-- [ ] Criar `components/BadgeCard.tsx` (colorido vs cinza)
-- [ ] Seção "Conquistas" em perfil.tsx (grid 3 colunas)
-- [ ] Modal de detalhes ao clicar
-- [ ] Animação de confete ao desbloquear
-
-### 4️⃣ Upload de Fotos — PRIORIDADE MÉDIA
-- [ ] Instalar `expo-image-picker`
-- [ ] Criar `hooks/useFotos.ts` (upload multipart → Cloudinary)
-- [ ] Criar `components/FotoGallery.tsx` (grid 2 colunas)
-- [ ] Botão em dia/[numero].tsx
-- [ ] Compressão antes do upload (max 1MB)
-
-### 5️⃣ Gráficos de Progresso — PRIORIDADE BAIXA
-- [ ] Instalar `react-native-chart-kit` + `react-native-svg`
-- [ ] Criar `hooks/useEstatisticas.ts`
-- [ ] Gráfico de linha XP + barras conclusão diária
-- [ ] Seção em perfil.tsx ou nova tela
-
-### 6️⃣ Tela de Quiz — PRIORIDADE BAIXA
-- [ ] Criar `app/quiz/[diaId].tsx`
-- [ ] Criar `hooks/useQuiz.ts` (`GET /api/quiz/dia/{id}`)
-- [ ] 4 opções, feedback verde/vermelho, explicação
-- [ ] Animação XP ganho
-
-### 7️⃣ Tela de Explore/Guia — PRIORIDADE BAIXA
-- [ ] Criar `app/(tabs)/explore.tsx` (conteúdo real)
-- [ ] Criar `hooks/useGuia.ts` (`GET /api/guia/categorias`)
-- [ ] Cards com ícones + navegação para artigo
-- [ ] Renderizar Markdown (`react-native-markdown-display`)
+### Infra
+- [x] Design system (#0e0e0e, #1E1E1E, #FF4757, #ff8d8c)
+- [x] Navegação 4 tabs (grid, bandage, document, person)
+- [x] Auth guard com useEffect + router.replace
+- [x] Compatibilidade web (toggles custom, sem expo-notifications)
 
 ---
 
-## 📦 Dependências a Instalar
-```bash
-npx expo install expo-notifications expo-device      # Notificações
-npx expo install expo-image-picker                    # Upload fotos
-npm install react-native-chart-kit react-native-svg   # Gráficos
-npm install react-native-markdown-display             # Guia
+## 🚧 Backend (Spring Boot) — 12 ENDPOINTS PENDENTES
+
+### Documentação criada (docs/)
+- `README.md` — ponto de entrada
+- `INDICE_COMPLETO.md` — mapa mental + glossário
+- `README_APIS.md` — guia de leitura APIs
+- `RESUMO_EXECUTIVO.md` — plano 4 fases (18h total)
+- `API_ENDPOINTS.md` — 12 endpoints com DTOs + curl
+- `SPRING_BOOT_IMPLEMENTATION.md` — código Java completo
+- `CHECKLIST_IMPLEMENTACAO.md` — progresso interativo
+- `REFERENCIA_RAPIDA.md` — tabela de consulta
+- `FLUXO_DE_DADOS.md` — diagramas ASCII
+- `SEED_DATA.sql` — badges, dicas, quiz, guia
+
+### Endpoints por fase
+
+#### 🔴 Fase 1 — ALTA (~6h)
+- [ ] `GET /badges/usuario/{id}`
+- [ ] `GET /estatisticas/cicatrizacao/{id}`
+- [ ] `GET /dicas/dia/{numero}`
+
+#### 🟡 Fase 2 — MÉDIA (~5h)
+- [ ] `POST /fotos/cicatrizacao/{id}`
+- [ ] `GET /fotos/cicatrizacao/{id}`
+- [ ] `DELETE /fotos/{id}`
+
+#### 🟡 Fase 3 — MÉDIA (~3h)
+- [ ] `GET /quiz/dia/{id}`
+- [ ] `POST /quiz/responder`
+
+#### 🟢 Fase 4 — BAIXA (~4h)
+- [ ] `GET /notificacoes/usuario/{id}`
+- [ ] `PUT /notificacoes/usuario/{id}`
+- [ ] `GET /guia/categorias`
+- [ ] `GET /guia/categoria/{id}`
+
+---
+
+## 📦 Dependências instaladas
+```
+expo-notifications, expo-device, expo-image-picker
 ```
 
-## 🔑 Referências
-- Backend: `https://inkflowbackend-4w1g.onrender.com/api`
-- Design: `docs/REFERENCIAS_TELAS/`
-- Docs: `docs/DOCS.md`
+## 🔑 Próximo passo
+Implementar os 12 endpoints no backend Spring Boot seguindo `docs/SPRING_BOOT_IMPLEMENTATION.md` + rodar `docs/SEED_DATA.sql`.

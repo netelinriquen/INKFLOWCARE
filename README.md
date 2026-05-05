@@ -62,6 +62,12 @@ Login: `POST /api/auth/login` → retorna JWT + dados do usuário.
 
 ## Documentação
 
+### Geral
 - Documentação técnica completa: [`docs/DOCS.md`](docs/DOCS.md)
 - Plano de implementação: [`docs/Plano_Implementação/PLANO.MD`](docs/Plano_Implementação/PLANO.MD)
 - Referências visuais (HTML): [`docs/REFERENCIAS_TELAS/`](docs/REFERENCIAS_TELAS/)
+
+### APIs Backend
+- **[Resumo Executivo](docs/RESUMO_EXECUTIVO.md)** - Ordem de implementação e prioridades
+- **[Lista de Endpoints](docs/API_ENDPOINTS.md)** - Documentação completa de todos os endpoints
+- **[Implementação Spring Boot](docs/SPRING_BOOT_IMPLEMENTATION.md)** - Código Java completo
