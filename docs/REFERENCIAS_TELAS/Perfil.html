@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+    <title>Inkflow - Perfil</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;900&amp;family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#fb7e9e",
+                        "on-surface": "#ffffff",
+                        "error-dim": "#d53d18",
+                        "on-tertiary-fixed-variant": "#4d1c85",
+                        "primary-dim": "#ff7072",
+                        "error": "#ff7351",
+                        "background": "#0e0e0e",
+                        "secondary-fixed": "#ffc2cd",
+                        "on-tertiary": "#481680",
+                        "on-primary-fixed": "#000000",
+                        "on-tertiary-fixed": "#25004b",
+                        "on-tertiary-container": "#3d0175",
+                        "on-background": "#ffffff",
+                        "surface-container": "#1a1919",
+                        "surface": "#0e0e0e",
+                        "primary": "#ff8d8c",
+                        "primary-fixed": "#ff7576",
+                        "on-primary": "#640010",
+                        "tertiary-fixed-dim": "#bd8df9",
+                        "surface-container-lowest": "#000000",
+                        "tertiary": "#cda4ff",
+                        "surface-container-high": "#201f1f",
+                        "on-primary-fixed-variant": "#60000f",
+                        "secondary-fixed-dim": "#ffadbe",
+                        "tertiary-fixed": "#c99dff",
+                        "error-container": "#b92902",
+                        "on-secondary": "#560022",
+                        "inverse-surface": "#fcf9f8",
+                        "tertiary-dim": "#b788f3",
+                        "secondary-container": "#832040",
+                        "surface-dim": "#0e0e0e",
+                        "surface-tint": "#ff8d8c",
+                        "primary-fixed-dim": "#ff595f",
+                        "surface-bright": "#2c2c2c",
+                        "surface-container-low": "#131313",
+                        "surface-container-highest": "#262626",
+                        "secondary-dim": "#f17796",
+                        "outline-variant": "#484847",
+                        "inverse-on-surface": "#565555",
+                        "tertiary-container": "#c292ff",
+                        "on-secondary-fixed": "#6a0a2e",
+                        "outline": "#767575",
+                        "surface-variant": "#262626",
+                        "on-secondary-container": "#ffc0cc",
+                        "on-surface-variant": "#adaaaa",
+                        "on-primary-container": "#4e000a",
+                        "on-error": "#450900",
+                        "primary-container": "#ff7576",
+                        "on-error-container": "#ffd2c8",
+                        "inverse-primary": "#bc152d",
+                        "on-secondary-fixed-variant": "#902b4a"
+                    },
+                    "fontFamily": {
+                        "headline": ["Epilogue"],
+                        "display": ["Epilogue"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0e0e0e;
+            min-height: 100dvh;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Toast Animation */
+        @keyframes slideDownFade {
+            from { opacity: 0; transform: translateY(-20px) translateX(-50%); }
+            to { opacity: 1; transform: translateY(0) translateX(-50%); }
+        }
+        .toast-animate { 
+            animation: slideDownFade 0.3s ease-out forwards; 
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        /* Oculta scrollbar */
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="font-body text-on-surface antialiased bg-surface selection:bg-primary-container selection:text-on-primary-container flex flex-col min-h-screen">
+    
+    <!-- TopAppBar -->
+    <header class="flex items-center justify-between px-4 h-16 w-full bg-[#0e0e0e]/90 backdrop-blur-md border-b border-white/5 sticky top-0 z-40">
+        <button class="js-action-btn w-10 h-10 flex items-center justify-center text-[#e63946] hover:bg-[#262626] transition-colors rounded-full active:scale-95 duration-200" data-action="Voltando...">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h1 class="font-headline font-bold text-lg tracking-tighter uppercase text-white">Perfil</h1>
+        <div class="w-10 h-10"></div> <!-- Spacer for centering -->
+    </header>
+
+    <main class="px-6 pt-8 pb-32 flex flex-col gap-8 max-w-lg mx-auto w-full flex-grow overflow-y-auto">
+        
+        <!-- Avatar & Info -->
+        <section class="flex flex-col items-center">
+            <div class="w-[80px] h-[80px] rounded-full bg-[rgba(255,71,87,0.15)] border-2 border-[rgba(255,71,87,0.4)] flex items-center justify-center mb-4 relative overflow-hidden shadow-[0_0_20px_rgba(255,71,87,0.2)]">
+                <span class="text-[#FF4757] font-bold text-[32px] font-headline">M</span>
+            </div>
+            <h2 class="text-white font-bold text-[18px] font-headline tracking-tight">Matheus Lima</h2>
+            <p class="text-[#999] text-[13px] mb-4">matheus@email.com</p>
+            <button class="js-action-btn border border-[#FF4757] bg-transparent rounded-full px-6 py-2 text-[#FF4757] text-[13px] font-semibold tracking-wide hover:bg-[#FF4757]/10 active:scale-95 transition-all" data-action="Abrindo editor de perfil...">
+                Editar perfil
+            </button>
+        </section>
+
+        <!-- Stats Card -->
+        <section class="bg-surface-container-highest rounded-xl p-6 flex justify-between items-center text-center shadow-lg border border-white/5">
+            <div class="flex-1">
+                <p class="text-white font-bold text-[24px] font-headline mb-1">3</p>
+                <p class="text-on-surface-variant text-[10px] uppercase tracking-widest font-bold">Tatuagens</p>
+            </div>
+            <div class="w-[1px] h-10 bg-surface-bright"></div>
+            <div class="flex-1">
+                <p class="text-primary font-bold text-[24px] font-headline mb-1">1</p>
+                <p class="text-on-surface-variant text-[10px] uppercase tracking-widest font-bold">Em cuidado</p>
+            </div>
+            <div class="w-[1px] h-10 bg-surface-bright"></div>
+            <div class="flex-1">
+                <p class="text-[#22c55e] font-bold text-[24px] font-headline mb-1">2</p>
+                <p class="text-on-surface-variant text-[10px] uppercase tracking-widest font-bold">Concluídas</p>
+            </div>
+        </section>
+
+        <!-- Tattoos Section -->
+        <section>
+            <h3 class="text-white font-bold text-[16px] font-headline mb-4 tracking-tight">Minhas tatuagens</h3>
+            <div class="flex flex-col gap-3">
+                <!-- Tattoo Card 1 -->
+                <div class="js-action-btn bg-surface-container-highest rounded-xl p-4 flex justify-between items-center group hover:bg-surface-bright active:scale-[0.98] transition-all cursor-pointer border border-white/5" data-action="Carregando detalhes: Dragão nas Costas">
+                    <div>
+                        <h4 class="text-white font-semibold text-[15px] mb-1">Dragão nas Costas</h4>
+                        <p class="text-on-surface-variant text-[12px]">Carlos Ink · 10/07/2025</p>
+                    </div>
+                    <span class="bg-secondary-container text-secondary text-[10px] uppercase font-bold px-2 py-1 rounded">Ativo</span>
+                </div>
+                
+                <!-- Tattoo Card 2 -->
+                <div class="js-action-btn bg-surface-container-highest rounded-xl p-4 flex justify-between items-center group hover:bg-surface-bright active:scale-[0.98] transition-all cursor-pointer border border-white/5" data-action="Carregando detalhes: Sleeve Japonês">
+                    <div>
+                        <h4 class="text-white font-semibold text-[15px] mb-1">Sleeve Japonês</h4>
+                        <p class="text-on-surface-variant text-[12px]">Carlos Ink · 15/03/2025</p>
+                    </div>
+                    <span class="bg-secondary-container text-secondary text-[10px] uppercase font-bold px-2 py-1 rounded">Ativo</span>
+                </div>
+                
+                <!-- Tattoo Card 3 -->
+                <div class="js-action-btn bg-surface-container-highest rounded-xl p-4 flex justify-between items-center group hover:bg-surface-bright active:scale-[0.98] transition-all cursor-pointer border border-white/5" data-action="Carregando detalhes: Borboleta no Pulso">
+                    <div>
+                        <h4 class="text-white font-semibold text-[15px] mb-1">Borboleta no Pulso</h4>
+                        <p class="text-on-surface-variant text-[12px]">Ana Ink · 02/01/2025</p>
+                    </div>
+                    <span class="bg-[#22c55e]/10 text-[#22c55e] text-[10px] uppercase font-bold px-2 py-1 rounded">Concluído</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section>
+            <h3 class="text-white font-bold text-[16px] font-headline mb-4 tracking-tight">Configurações</h3>
+            <div class="bg-surface-container-highest rounded-xl flex flex-col border border-white/5 overflow-hidden">
+                
+                <!-- Setting Item 1: Toggle -->
+                <div class="flex justify-between items-center p-4 border-b border-surface-bright cursor-pointer js-toggle-row" data-id="notif-toggle">
+                    <span class="text-white text-[14px] font-medium">Notificações</span>
+                    <div class="w-12 h-6 rounded-full relative transition-colors duration-300 bg-primary js-toggle-track">
+                        <div class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transform translate-x-6 transition-transform duration-300 shadow-sm js-toggle-thumb"></div>
+                    </div>
+                </div>
+                
+                <!-- Setting Item 2: Toggle -->
+                <div class="flex justify-between items-center p-4 border-b border-surface-bright cursor-pointer js-toggle-row" data-id="theme-toggle">
+                    <span class="text-white text-[14px] font-medium">Tema escuro</span>
+                    <div class="w-12 h-6 rounded-full relative transition-colors duration-300 bg-primary js-toggle-track">
+                        <div class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transform translate-x-6 transition-transform duration-300 shadow-sm js-toggle-thumb"></div>
+                    </div>
+                </div>
+                
+                <!-- Setting Item 3: Link -->
+                <div class="js-action-btn flex justify-between items-center p-4 border-b border-surface-bright hover:bg-surface-bright transition-colors cursor-pointer" data-action="Abrindo configurações de Privacidade...">
+                    <span class="text-white text-[14px] font-medium">Privacidade</span>
+                    <span class="material-symbols-outlined text-on-surface-variant text-xl">chevron_right</span>
+                </div>
+                
+                <!-- Setting Item 4: Link -->
+                <div class="js-action-btn flex justify-between items-center p-4 hover:bg-surface-bright transition-colors cursor-pointer" data-action="Abrindo Central de Ajuda...">
+                    <span class="text-white text-[14px] font-medium">Ajuda</span>
+                    <span class="material-symbols-outlined text-on-surface-variant text-xl">chevron_right</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Logout Button -->
+        <button class="js-action-btn w-full border border-error/50 bg-error/10 rounded-xl py-4 text-error font-bold text-[14px] tracking-wide hover:bg-error/20 active:scale-[0.98] transition-all mt-2 flex justify-center items-center gap-2" data-action="Saindo da conta..." data-is-error="true">
+            <span class="material-symbols-outlined text-[18px]">logout</span> Sair da conta
+        </button>
+
+    </main>
+
+    <!-- BottomNavBar -->
+    <nav class="fixed bottom-0 left-0 w-full h-[88px] flex justify-around items-center px-4 pb-6 pt-2 bg-[#0a0a0a]/95 backdrop-blur-xl z-50 border-t border-white/5 shadow-[0_-10px_40px_rgba(230,57,70,0.05)] md:hidden">
+        
+        <!-- Nav Item 1 -->
+        <button class="js-nav-btn flex flex-col items-center gap-1 group text-on-surface-variant hover:text-white transition-all duration-300 flex-1">
+            <span class="material-symbols-outlined text-[24px] group-active:scale-90 transition-transform">grid_view</span>
+        </button>
+        
+        <!-- Nav Item 2 -->
+        <button class="js-nav-btn flex flex-col items-center gap-1 group text-on-surface-variant hover:text-white transition-all duration-300 flex-1">
+            <span class="material-symbols-outlined text-[24px] group-active:scale-90 transition-transform">medical_services</span>
+        </button>
+        
+        <!-- Nav Item 3 -->
+        <button class="js-nav-btn flex flex-col items-center gap-1 group text-on-surface-variant hover:text-white transition-all duration-300 flex-1">
+            <span class="material-symbols-outlined text-[24px] group-active:scale-90 transition-transform">description</span>
+        </button>
+        
+        <!-- Nav Item 4 (Active default) -->
+        <button class="js-nav-btn flex flex-col items-center gap-1 group text-[#e63946] drop-shadow-[0_0_12px_rgba(230,57,70,0.4)] transition-all duration-300 flex-1 is-active">
+            <span class="material-symbols-outlined text-[28px] group-active:scale-90 transition-transform" style="font-variation-settings: 'FILL' 1;">person</span>
+        </button>
+    </nav>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-20 w-full max-w-sm z-[100] pointer-events-none flex flex-col items-center gap-2"></div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. Toast Notification System ---
+            function showToast(message, isError = false) {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                
+                const bgColor = isError ? 'bg-error' : 'bg-surface-container-highest';
+                const textColor = isError ? 'text-white' : 'text-primary';
+                const icon = isError ? 'logout' : 'info';
+                
+                toast.className = `flex items-center gap-3 px-6 py-3 rounded-full shadow-2xl toast-animate pointer-events-auto border border-white/10 ${bgColor}`;
+                toast.innerHTML = `
+                    <span class="material-symbols-outlined text-[18px] ${textColor}">${icon}</span>
+                    <span class="text-xs font-bold tracking-wide text-white">${message}</span>
+                `;
+                
+                container.appendChild(toast);
+                
+                // Auto remove
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-20px) translateX(-50%)';
+                    toast.style.transition = 'all 0.3s ease';
+                    setTimeout(() => toast.remove(), 300);
+                }, 2500);
+            }
+
+            // Bind Toasts to Generic Action Buttons
+            document.querySelectorAll('.js-action-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const actionMsg = btn.getAttribute('data-action');
+                    const isError = btn.getAttribute('data-is-error') === 'true';
+                    if(actionMsg) showToast(actionMsg, isError);
+                });
+            });
+
+
+            // --- 2. Toggle Switches Logic ---
+            document.querySelectorAll('.js-toggle-row').forEach(row => {
+                // Initial State is ON
+                row.setAttribute('data-state', 'on');
+
+                row.addEventListener('click', function() {
+                    const isChecked = this.getAttribute('data-state') === 'on';
+                    const track = this.querySelector('.js-toggle-track');
+                    const thumb = this.querySelector('.js-toggle-thumb');
+                    const toggleId = this.getAttribute('data-id');
+
+                    if (isChecked) {
+                        // Turn OFF
+                        this.setAttribute('data-state', 'off');
+                        track.classList.remove('bg-primary');
+                        track.classList.add('bg-surface-variant');
+                        thumb.classList.remove('translate-x-6');
+                        thumb.classList.add('translate-x-0');
+                        
+                        // Custom messages based on toggle
+                        if(toggleId === 'theme-toggle') showToast("O tema escuro é obrigatório neste aplicativo.", true);
+                        if(toggleId === 'notif-toggle') showToast("Notificações desativadas.");
+                    } else {
+                        // Turn ON
+                        this.setAttribute('data-state', 'on');
+                        track.classList.remove('bg-surface-variant');
+                        track.classList.add('bg-primary');
+                        thumb.classList.remove('translate-x-0');
+                        thumb.classList.add('translate-x-6');
+                        
+                        if(toggleId === 'theme-toggle') showToast("Tema escuro reativado.");
+                        if(toggleId === 'notif-toggle') showToast("Notificações ativadas.");
+                    }
+                });
+            });
+
+
+            // --- 3. Bottom Navigation Logic ---
+            const navBtns = document.querySelectorAll('.js-nav-btn');
+            
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Reset all buttons
+                    navBtns.forEach(b => {
+                        b.classList.remove('text-[#e63946]', 'drop-shadow-[0_0_12px_rgba(230,57,70,0.4)]', 'is-active');
+                        b.classList.add('text-on-surface-variant');
+                        
+                        const icon = b.querySelector('.material-symbols-outlined');
+                        icon.classList.remove('text-[28px]');
+                        icon.classList.add('text-[24px]');
+                        icon.style.fontVariationSettings = "'FILL' 0";
+                    });
+
+                    // Set active button
+                    this.classList.remove('text-on-surface-variant');
+                    this.classList.add('text-[#e63946]', 'drop-shadow-[0_0_12px_rgba(230,57,70,0.4)]', 'is-active');
+                    
+                    const icon = this.querySelector('.material-symbols-outlined');
+                    icon.classList.remove('text-[24px]');
+                    icon.classList.add('text-[28px]');
+                    icon.style.fontVariationSettings = "'FILL' 1";
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>

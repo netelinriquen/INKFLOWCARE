@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Redirect } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -17,12 +18,17 @@ import { Alert } from 'react-native';
 import { useAuth } from '@/context/auth';
 
 export default function LoginScreen() {
-  const { login } = useAuth();
+  const { login, logado, loading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [showSenha, setShowSenha] = useState(false);
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Já logado → vai para tabs
+  if (logado && !authLoading) {
+    return <Redirect href="/(tabs)" />;
+  }
 
   function validar() {
     if (!email.trim()) return 'Informe o email.';

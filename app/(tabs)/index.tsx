@@ -1,111 +1,141 @@
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '@/context/auth';
+import { useCicatrizacao } from '@/hooks/useCicatrizacao';
+import { useChecklist } from '@/hooks/useChecklist';
 
-const tatuagem = {
-  nome: 'Dragão nas costas',
-  diasRestantes: 12,
-  totalDias: 30,
-  fase: 'Descamação',
-  artista: 'Carlos Ink',
-  data: '10/07/2025',
+const periodoHoras: Record<string, string> = {
+  MANHA: '08:00',
+  TARDE: '14:00',
+  NOITE: '20:00',
 };
 
-const lembretesIniciais = [
-  { id: 1, hora: '08:00', titulo: 'Lavar a tatuagem', feito: true, icone: 'water-outline' },
-  { id: 2, hora: '12:00', titulo: 'Aplicar pomada hidratante', feito: true, icone: 'medical-outline' },
-  { id: 3, hora: '15:00', titulo: 'Verificar sinais de inflamação', feito: false, icone: 'eye-outline' },
-  { id: 4, hora: '18:00', titulo: 'Lavar a tatuagem', feito: false, icone: 'water-outline' },
-  { id: 5, hora: '20:00', titulo: 'Aplicar protetor solar', feito: false, icone: 'sunny-outline' },
-  { id: 6, hora: '22:00', titulo: 'Aplicar pomada hidratante', feito: false, icone: 'medical-outline' },
-];
+const faseNomes: Record<string, string> = {
+  FASE_1_PRIMEIRAS_24H: 'Primeiras 24h',
+  FASE_2_INICIAL: 'Inicial',
+  FASE_3_DESCAMACAO: 'Descamação',
+  FASE_4_PROFUNDA: 'Cicatrização Profunda',
+};
 
-const dicas = [
-  { icon: 'water-outline', texto: 'Hidrate bem a pele hoje — fase de descamação exige mais cuidado', cor: '#4FC3F7' },
-  { icon: 'sunny-outline', texto: 'Evite exposição ao sol diretamente na tatuagem', cor: '#FFD54F' },
-  { icon: 'shirt-outline', texto: 'Use roupas folgadas e de tecido macio sobre a área', cor: '#A5D6A7' },
-  { icon: 'hand-left-outline', texto: 'Não coce nem arranhe mesmo que sinta coceira', cor: '#EF9A9A' },
+// Mock data fixos para visual
+const MOCK_LEMBRETES = [
+  { id: 1, hora: '08:00', titulo: 'Lavar a tatuagem', feito: true },
+  { id: 2, hora: '12:00', titulo: 'Aplicar pomada', feito: true },
+  { id: 3, hora: '15:00', titulo: 'Verificar inflamação', feito: true },
+  { id: 4, hora: '18:00', titulo: 'Aplicar pomada', feito: false },
+  { id: 5, hora: '20:00', titulo: 'Protetor solar', feito: false },
+  { id: 6, hora: '22:00', titulo: 'Aplicar pomada', feito: false },
 ];
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [lembretes, setLembretes] = useState(lembretesIniciais);
-  const progresso = (tatuagem.totalDias - tatuagem.diasRestantes) / tatuagem.totalDias;
-  const feitos = lembretes.filter((l) => l.feito).length;
+  const { user } = useAuth();
+  const { cicatrizacao } = useCicatrizacao();
+  const { checklist, toggleItem } = useChecklist(
+    cicatrizacao?.id || null,
+    cicatrizacao?.diaAtual || 1
+  );
+  const [lembretes, setLembretes] = useState(MOCK_LEMBRETES);
 
-  function toggleLembrete(id: number) {
-    setLembretes((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, feito: !l.feito } : l))
-    );
+  // Usa checklist real se disponível, senão usa mockado
+  const lembretesAtivos = checklist.length > 0 ? checklist.map(item => ({
+    id: item.id,
+    hora: periodoHoras[item.periodo] || '00:00',
+    titulo: item.descricao,
+    feito: item.concluido,
+  })) : lembretes;
+
+  const feitos = lembretesAtivos.filter((l) => l.feito).length;
+
+  async function toggleLembrete(id: number) {
+    if (checklist.length > 0) {
+      await toggleItem(id);
+    } else {
+      setLembretes((prev) =>
+        prev.map((l) => (l.id === id ? { ...l, feito: !l.feito } : l))
+      );
+    }
   }
 
   function handleNotificacoes() {
     Alert.alert(
       '🔔 Notificações',
-      `Tens ${lembretes.filter((l) => !l.feito).length} lembretes pendentes para hoje.\n\nNotificações push serão ativadas em breve.`,
+      `Tens ${lembretesAtivos.filter((l) => !l.feito).length} lembretes pendentes para hoje.`,
       [{ text: 'OK' }]
     );
   }
 
   return (
-    <LinearGradient colors={['#000000', '#0a0a2e', '#0d1b4b']} style={styles.gradient}>
+    <View style={styles.container}>
       <SafeAreaView style={styles.safe}>
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-
-          {/* Header */}
-          <View style={styles.header}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Image
+              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDFFvcOtsX7DWP0DOGXfuQL31wg_9F3UTF--4--JgXRnyfsxJAdzzJOasBpifHKxWIUUd8KOUOh_ryE78YnwQHqSul5LlEkGuLYw24le-G7OMlvTocMur1QFil3pRR9vJl4cYwOOrngtxGFxGbmsrgaVfpsgR-JBs8RZMOSulHORUZfo65yaBkvboEPjMuAtfxHNe83y1n3_BHZZVbneqMjjkvsI_xedg3JQkWJrlBB6LrgKJrtVKbI3yG65oY7YmIrh3Xh-A7F-cc' }}
+              style={styles.headerAvatar}
+            />
             <View>
-              <Text style={styles.greeting}>Olá, João 👋</Text>
+              <Text style={styles.greeting}>Olá, {user?.nome || 'Matheus'} 👋</Text>
               <Text style={styles.headerSub}>Veja o progresso da sua tatuagem</Text>
             </View>
-            <TouchableOpacity style={styles.notifBtn} onPress={handleNotificacoes} activeOpacity={0.7}>
-              <Ionicons name="notifications-outline" size={22} color="#fff" />
-              {lembretes.filter((l) => !l.feito).length > 0 && (
-                <View style={styles.notifBadge}>
-                  <Text style={styles.notifBadgeText}>{lembretes.filter((l) => !l.feito).length}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
           </View>
+          <TouchableOpacity style={styles.notifBtn} onPress={handleNotificacoes} activeOpacity={0.7}>
+            <Ionicons name="notifications-outline" size={22} color="#adaaaa" />
+            <View style={styles.notifBadge}>
+              <Text style={styles.notifBadgeText}>3</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
 
-          {/* Card principal */}
+        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+
+          {/* Card principal — sempre visível com dados mockados */}
           <View style={styles.card}>
             <View style={styles.cardHeader}>
               <View>
-                <Text style={styles.cardLabel}>Tatuagem ativa</Text>
-                <Text style={styles.cardTitle}>{tatuagem.nome}</Text>
+                <Text style={styles.cardLabel}>TATUAGEM ATIVA</Text>
+                <Text style={styles.cardTitle}>Tatuagem Braço</Text>
               </View>
               <View style={styles.faseBadge}>
-                <Text style={styles.faseText}>{tatuagem.fase}</Text>
+                <Text style={styles.faseText}>Descamação</Text>
               </View>
             </View>
 
-            <View style={styles.progressContainer}>
-              <View style={styles.progressBar}>
-                <View style={[styles.progressFill, { width: `${progresso * 100}%` }]} />
-              </View>
-              <Text style={styles.progressText}>
-                {tatuagem.totalDias - tatuagem.diasRestantes}/{tatuagem.totalDias} dias
-              </Text>
+            <View style={styles.progressRow}>
+              <Text style={styles.progressPercent}>60%</Text>
+              <Text style={styles.progressConcluido}>Concluído</Text>
+            </View>
+
+            <View style={styles.progressBar}>
+              <View style={[styles.progressFill, { width: '60%' }]} />
             </View>
 
             <View style={styles.cardInfo}>
               <View style={styles.cardInfoItem}>
-                <Ionicons name="person-outline" size={14} color="#888" />
-                <Text style={styles.cardInfoText}>{tatuagem.artista}</Text>
+                <Text style={styles.cardInfoLabel}>Progresso</Text>
+                <Text style={styles.cardInfoValue}>18/30 dias</Text>
               </View>
               <View style={styles.cardInfoItem}>
-                <Ionicons name="calendar-outline" size={14} color="#888" />
-                <Text style={styles.cardInfoText}>{tatuagem.data}</Text>
+                <Text style={styles.cardInfoLabel}>Restante</Text>
+                <Text style={[styles.cardInfoValue, styles.cardInfoValueRed]}>12 dias</Text>
               </View>
               <View style={styles.cardInfoItem}>
-                <Ionicons name="time-outline" size={14} color="#FF0000" />
-                <Text style={[styles.cardInfoText, { color: '#FF0000' }]}>
-                  {tatuagem.diasRestantes} dias restantes
-                </Text>
+                <Text style={styles.cardInfoLabel}>Artista</Text>
+                <View style={styles.cardInfoRow}>
+                  <Ionicons name="brush-outline" size={14} color="#999" />
+                  <Text style={styles.cardInfoValue}>Carlos Ink</Text>
+                </View>
+              </View>
+              <View style={styles.cardInfoItem}>
+                <Text style={styles.cardInfoLabel}>Data</Text>
+                <View style={styles.cardInfoRow}>
+                  <Ionicons name="calendar-outline" size={14} color="#999" />
+                  <Text style={styles.cardInfoValue}>10/07/2025</Text>
+                </View>
               </View>
             </View>
           </View>
@@ -113,156 +143,173 @@ export default function HomeScreen() {
           {/* Lembretes de hoje */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Lembretes de hoje</Text>
-            <Text style={styles.sectionCounter}>{feitos}/{lembretes.length} feitos</Text>
+            <Text style={styles.sectionCounter}>{feitos}/{lembretesAtivos.length} feitos</Text>
           </View>
 
-          {/* Barra de progresso dos lembretes */}
-          <View style={styles.lembretesProgressBar}>
-            <View style={[styles.lembretesProgressFill, { width: `${(feitos / lembretes.length) * 100}%` }]} />
+          {/* Barra de progresso fina */}
+          <View style={styles.thinProgressBar}>
+            <View style={[styles.thinProgressFill, { width: `${(feitos / lembretesAtivos.length) * 100}%` }]} />
           </View>
 
           <View style={styles.lembretesContainer}>
-            {lembretes.map((l) => (
+            {lembretesAtivos.map((l) => (
               <TouchableOpacity
                 key={l.id}
-                style={[styles.lembrete, l.feito && styles.lembreteFeito]}
+                style={styles.lembrete}
                 onPress={() => toggleLembrete(l.id)}
                 activeOpacity={0.7}
               >
-                <View style={styles.lembreteLeft}>
-                  <View style={[styles.lembreteCheck, l.feito && styles.lembreteCheckFeito]}>
-                    {l.feito && <Ionicons name="checkmark" size={12} color="#fff" />}
+                {/* Checkbox */}
+                {l.feito ? (
+                  <View style={styles.checkboxChecked}>
+                    <Ionicons name="checkmark" size={16} color="#fff" />
                   </View>
-                  <View>
-                    <Text style={[styles.lembreteTitulo, l.feito && styles.lembreteTextoFeito]}>
-                      {l.titulo}
-                    </Text>
-                    <View style={styles.lembreteIconeRow}>
-                      <Ionicons name={l.icone as any} size={11} color="#555" />
-                      <Text style={styles.lembreteSubtitulo}>{l.feito ? 'Concluído' : 'Pendente'}</Text>
-                    </View>
-                  </View>
+                ) : (
+                  <View style={styles.checkboxUnchecked} />
+                )}
+                {/* Text */}
+                <View style={[styles.lembreteTextRow, l.feito && { opacity: 0.5 }]}>
+                  <Text style={[styles.lembreteTitulo, l.feito && styles.lembreteTextoFeito]}>
+                    {l.titulo}
+                  </Text>
+                  <Text style={styles.lembreteHora}>{l.hora}</Text>
                 </View>
-                <Text style={styles.lembreteHora}>{l.hora}</Text>
               </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* Dicas do dia */}
-          <Text style={styles.sectionTitle}>Dicas do dia</Text>
-          <View style={styles.dicasContainer}>
-            {dicas.map((d, i) => (
-              <View key={i} style={styles.dica}>
-                <View style={[styles.dicaIcon, { backgroundColor: `${d.cor}18` }]}>
-                  <Ionicons name={d.icon as any} size={18} color={d.cor} />
-                </View>
-                <Text style={styles.dicaTexto}>{d.texto}</Text>
-              </View>
             ))}
           </View>
 
           {/* Botão adicionar tatuagem */}
           <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/nova-tatuagem')} activeOpacity={0.7}>
-            <Ionicons name="add-circle-outline" size={20} color="#FF0000" />
+            <Ionicons name="add" size={20} color="#FF4757" />
             <Text style={styles.addBtnText}>Adicionar nova tatuagem</Text>
           </TouchableOpacity>
 
         </ScrollView>
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  gradient: { flex: 1 },
+  container: { flex: 1, backgroundColor: '#0e0e0e' },
   safe: { flex: 1 },
-  scroll: { paddingHorizontal: 22, paddingBottom: 30 },
+  scroll: { paddingHorizontal: 24, paddingBottom: 120 },
 
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 16, marginBottom: 24 },
-  greeting: { fontSize: 22, fontWeight: '700', color: '#fff' },
-  headerSub: { fontSize: 13, color: '#888', marginTop: 2 },
+  // Header
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    backgroundColor: '#131313',
+    borderBottomWidth: 1,
+    borderBottomColor: '#262626',
+  },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  headerAvatar: {
+    width: 44, height: 44, borderRadius: 8,
+    backgroundColor: '#262626',
+  },
+  greeting: { fontSize: 20, fontWeight: '700', color: '#fff' },
+  headerSub: { fontSize: 14, color: '#adaaaa', marginTop: 2 },
   notifBtn: {
-    width: 42, height: 42, borderRadius: 21,
+    width: 40, height: 40, borderRadius: 20,
     backgroundColor: 'rgba(255,255,255,0.07)',
     justifyContent: 'center', alignItems: 'center',
+    position: 'relative',
   },
   notifBadge: {
-    position: 'absolute', top: 6, right: 6,
+    position: 'absolute', top: 4, right: 4,
     width: 16, height: 16, borderRadius: 8,
-    backgroundColor: '#FF0000', justifyContent: 'center', alignItems: 'center',
+    backgroundColor: '#FF9500', justifyContent: 'center', alignItems: 'center',
   },
-  notifBadgeText: { color: '#fff', fontSize: 9, fontWeight: '700' },
+  notifBadgeText: { color: '#fff', fontSize: 10, fontWeight: '700' },
 
+  // Card principal
   card: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 16, padding: 18, marginBottom: 28,
+    backgroundColor: '#1E1E1E',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 12, padding: 24, marginBottom: 32, marginTop: 24,
   },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 },
-  cardLabel: { fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: 1 },
+  cardHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16,
+  },
+  cardLabel: { fontSize: 11, color: '#999', textTransform: 'uppercase', letterSpacing: 2, fontWeight: '700' },
   cardTitle: { fontSize: 18, fontWeight: '700', color: '#fff', marginTop: 4 },
   faseBadge: {
-    backgroundColor: 'rgba(255,0,0,0.15)',
-    borderWidth: 1, borderColor: 'rgba(255,0,0,0.3)',
-    borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
+    backgroundColor: '#C2185B',
+    paddingHorizontal: 10, paddingVertical: 4,
+    borderRadius: 4,
   },
-  faseText: { color: '#FF0000', fontSize: 12, fontWeight: '600' },
+  faseText: { color: '#fff', fontSize: 11, fontWeight: '700' },
 
-  progressContainer: { marginBottom: 16 },
-  progressBar: { height: 6, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, marginBottom: 6 },
-  progressFill: { height: 6, backgroundColor: '#FF0000', borderRadius: 3 },
-  progressText: { fontSize: 12, color: '#888', textAlign: 'right' },
+  progressRow: { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginBottom: 8 },
+  progressPercent: { fontSize: 32, fontWeight: '700', color: '#FF4757' },
+  progressConcluido: { fontSize: 13, color: '#999' },
+  progressBar: { height: 6, backgroundColor: '#2A2A2A', borderRadius: 3, marginBottom: 24, overflow: 'hidden' },
+  progressFill: { height: 6, backgroundColor: '#FF4757', borderRadius: 3 },
 
-  cardInfo: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  cardInfoItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  cardInfoText: { fontSize: 12, color: '#888' },
+  cardInfo: {
+    flexDirection: 'row', flexWrap: 'wrap', gap: 16,
+    paddingTop: 16, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.08)',
+  },
+  cardInfoItem: { width: '45%' },
+  cardInfoLabel: { fontSize: 12, color: '#999', marginBottom: 4 },
+  cardInfoRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  cardInfoValue: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  cardInfoValueRed: { color: '#FF4757' },
 
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#fff', marginBottom: 12 },
-  sectionCounter: { fontSize: 13, color: '#FF0000', fontWeight: '600' },
+  // Section header
+  sectionHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8,
+  },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#fff' },
+  sectionCounter: { fontSize: 13, color: '#FF4757', fontWeight: '600' },
 
-  lembretesProgressBar: { height: 3, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 2, marginBottom: 14 },
-  lembretesProgressFill: { height: 3, backgroundColor: '#FF0000', borderRadius: 2 },
+  // Thin progress bar under section title
+  thinProgressBar: { height: 3, backgroundColor: '#2A2A2A', borderRadius: 1.5, marginBottom: 16, overflow: 'hidden' },
+  thinProgressFill: { height: 3, backgroundColor: '#FF4757', borderRadius: 1.5 },
 
-  lembretesContainer: { gap: 8, marginBottom: 28 },
+  // Lembretes container
+  lembretesContainer: {
+    backgroundColor: '#1E1E1E',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 12,
+    padding: 8,
+    marginBottom: 32,
+  },
   lembrete: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 12, padding: 14,
+    flexDirection: 'row', alignItems: 'center',
+    padding: 12,
+    borderRadius: 8,
+    gap: 16,
   },
-  lembreteFeito: { opacity: 0.45 },
-  lembreteLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  lembreteCheck: {
-    width: 22, height: 22, borderRadius: 11,
-    borderWidth: 1.5, borderColor: '#555',
+  // Checked: solid red circle with white check
+  checkboxChecked: {
+    width: 28, height: 28, borderRadius: 14,
+    backgroundColor: '#FF4757',
     justifyContent: 'center', alignItems: 'center',
   },
-  lembreteCheckFeito: { backgroundColor: '#FF0000', borderColor: '#FF0000' },
-  lembreteTitulo: { fontSize: 14, color: '#fff', fontWeight: '500' },
-  lembreteTextoFeito: { textDecorationLine: 'line-through', color: '#555' },
-  lembreteIconeRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
-  lembreteSubtitulo: { fontSize: 11, color: '#555' },
-  lembreteHora: { fontSize: 12, color: '#888' },
-
-  dicasContainer: { gap: 8, marginBottom: 28 },
-  dica: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 12, padding: 14,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
+  // Unchecked: circle with #555 border
+  checkboxUnchecked: {
+    width: 28, height: 28, borderRadius: 14,
+    borderWidth: 2, borderColor: '#555',
   },
-  dicaIcon: {
-    width: 36, height: 36, borderRadius: 18,
-    justifyContent: 'center', alignItems: 'center',
+  lembreteTextRow: {
+    flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
-  dicaTexto: { fontSize: 13, color: '#ccc', flex: 1, lineHeight: 19 },
+  lembreteTitulo: { fontSize: 15, color: '#fff', fontWeight: '500' },
+  lembreteTextoFeito: { textDecorationLine: 'line-through', color: '#999' },
+  lembreteHora: { fontSize: 13, color: '#999' },
 
+  // CTA button
   addBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    borderWidth: 1.5, borderColor: 'rgba(255,0,0,0.3)',
-    borderRadius: 12, height: 50,
-    backgroundColor: 'rgba(255,0,0,0.05)',
+    borderWidth: 1, borderColor: 'rgba(255,71,87,0.3)',
+    borderRadius: 12, height: 56,
+    backgroundColor: 'rgba(255,71,87,0.08)',
   },
-  addBtnText: { color: '#FF0000', fontSize: 15, fontWeight: '600' },
+  addBtnText: { color: '#FF4757', fontSize: 14, fontWeight: '700' },
 });

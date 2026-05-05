@@ -1,44 +1,109 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs, useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 import { HapticTab } from '@/components/haptic-tab';
+import { useAuth } from '@/context/auth';
 
 export default function TabLayout() {
+  const { logado, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (loading) return;
+    if (!logado) {
+      router.replace('/login');
+    }
+  }, [logado, loading]);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0e0e0e' }}>
+        <ActivityIndicator size="large" color="#ff8d8c" />
+      </View>
+    );
+  }
+
+  if (!logado) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#0e0e0e' }}>
+        <ActivityIndicator size="large" color="#ff8d8c" style={{ flex: 1 }} />
+      </View>
+    );
+  }
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          backgroundColor: '#0a0a0a',
-          borderTopColor: 'rgba(255,255,255,0.08)',
+          backgroundColor: '#111',
+          borderTopColor: '#222',
           borderTopWidth: 1,
-          height: 62,
-          paddingBottom: 8,
+          height: 80,
+          paddingBottom: 20,
+          paddingTop: 8,
         },
-        tabBarActiveTintColor: '#FF0000',
-        tabBarInactiveTintColor: '#555',
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+        tabBarActiveTintColor: '#FF4757',
+        tabBarInactiveTintColor: '#adaaaa',
+        tabBarShowLabel: false,
+        tabBarIconStyle: { marginTop: 0 },
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Início',
-          tabBarIcon: ({ color }) => <Ionicons name="home" size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{
+              backgroundColor: focused ? 'rgba(255,71,87,0.15)' : 'transparent',
+              borderRadius: 8,
+              padding: 12,
+            }}>
+              <Ionicons name={focused ? 'grid' : 'grid-outline'} size={24} color={color} />
+            </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="caminho"
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{
+              backgroundColor: focused ? 'rgba(255,71,87,0.15)' : 'transparent',
+              borderRadius: 8,
+              padding: 12,
+            }}>
+              <Ionicons name={focused ? 'bandage' : 'bandage-outline'} size={24} color={color} />
+            </View>
+          ),
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'Cuidados',
-          tabBarIcon: ({ color }) => <Ionicons name="heart" size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{
+              backgroundColor: focused ? 'rgba(255,71,87,0.15)' : 'transparent',
+              borderRadius: 8,
+              padding: 12,
+            }}>
+              <Ionicons name={focused ? 'document-text' : 'document-text-outline'} size={24} color={color} />
+            </View>
+          ),
         }}
       />
       <Tabs.Screen
         name="perfil"
         options={{
-          title: 'Perfil',
-          tabBarIcon: ({ color }) => <Ionicons name="person" size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{
+              backgroundColor: focused ? 'rgba(255,71,87,0.15)' : 'transparent',
+              borderRadius: 8,
+              padding: 12,
+            }}>
+              <Ionicons name={focused ? 'person' : 'person-outline'} size={24} color={color} />
+            </View>
+          ),
         }}
       />
     </Tabs>

@@ -79,9 +79,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function logout() {
     try {
-      // Limpa AsyncStorage
-      await AsyncStorage.multiRemove(['@inkflow:token', '@inkflow:user']);
-      
+      await AsyncStorage.removeItem('@inkflow:token');
+      await AsyncStorage.removeItem('@inkflow:user');
       setUser(null);
       setLogado(false);
     } catch (error) {

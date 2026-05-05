@@ -33,7 +33,8 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       // Token inválido ou expirado - limpar storage e redirecionar para login
-      await AsyncStorage.multiRemove(['@inkflow:token', '@inkflow:user']);
+      await AsyncStorage.removeItem('@inkflow:token');
+      await AsyncStorage.removeItem('@inkflow:user');
     }
     return Promise.reject(error);
   }

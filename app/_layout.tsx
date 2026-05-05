@@ -1,31 +1,14 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { AuthProvider, useAuth } from '@/context/auth';
+import { AuthProvider } from '@/context/auth';
 
 export const unstable_settings = {
   initialRouteName: 'login',
 };
-
-function Guard() {
-  const { logado, loading } = useAuth();
-  const segments = useSegments();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (loading) return; // Aguarda carregar do AsyncStorage
-    
-    const emTabs = segments[0] === '(tabs)';
-    if (!logado && emTabs) router.replace('/login');
-    if (logado && !emTabs && segments[0] !== 'nova-tatuagem') router.replace('/(tabs)');
-  }, [logado, segments, loading]);
-
-  return null;
-}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -33,7 +16,6 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Guard />
         <Stack initialRouteName="login">
           <Stack.Screen name="login" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -45,3 +27,4 @@ export default function RootLayout() {
     </AuthProvider>
   );
 }
+

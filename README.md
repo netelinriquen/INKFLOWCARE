@@ -1,50 +1,67 @@
-# Welcome to your Expo app 👋
+# InkFlowCare Mobile 🎨
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Guia gamificado de cuidados pós-tatuagem, inspirado na mecânica do Duolingo. Extensão mobile de um projeto web de estúdio de tatuagem já existente.
 
-## Get started
+## Stack
 
-1. Install dependencies
+| Camada | Tecnologia |
+|--------|-----------|
+| Framework | React Native + Expo 54 |
+| Linguagem | TypeScript |
+| Navegação | Expo Router (file-based) |
+| Estado | Context API |
+| HTTP | Axios |
+| Persistência | AsyncStorage |
+| Backend | Spring Boot 3.x + Java 17 (deploy no Render) |
+| Auth | JWT (HS256, 24h) |
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Como rodar
 
 ```bash
-npm run reset-project
+# 1. Instalar dependências
+npm install
+
+# 2. Iniciar dev server
+npx expo start
+
+# 3. Limpar cache (se necessário)
+npx expo start -c
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Opções de execução:
+- **Web:** pressione `w` no terminal
+- **Android:** pressione `a` (requer emulador ou Expo Go)
+- **iOS:** pressione `i` (requer simulador macOS)
 
-## Learn more
+## Estrutura
 
-To learn more about developing your project with Expo, look at the following resources:
+```
+app/          → Telas e navegação (Expo Router)
+components/   → Componentes reutilizáveis
+context/      → AuthContext (JWT + AsyncStorage)
+hooks/        → useCicatrizacao, useCaminho, useChecklist
+services/     → Axios com interceptor JWT
+scripts/      → Scripts de diagnóstico e teste
+docs/         → Documentação técnica, referências visuais e plano
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Telas
 
-## Join the community
+| Tab | Tela | Descrição |
+|-----|------|-----------|
+| 1 | Dashboard | Progresso da tatuagem ativa + lembretes do dia |
+| 2 | Recovery Progress | Caminho estilo Duolingo com nós de progresso |
+| 3 | Explore | Guia de cuidados |
+| 4 | Perfil | Dados do usuário + configurações + histórico |
 
-Join our community of developers creating universal apps.
+## Backend
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+API em: `https://inkflowbackend-4w1g.onrender.com/api`
+
+Login: `POST /api/auth/login` → retorna JWT + dados do usuário.
+
+## Documentação
+
+- Documentação técnica completa: [`docs/DOCS.md`](docs/DOCS.md)
+- Plano de implementação: [`docs/Plano_Implementação/PLANO.MD`](docs/Plano_Implementação/PLANO.MD)
+- Referências visuais (HTML): [`docs/REFERENCIAS_TELAS/`](docs/REFERENCIAS_TELAS/)

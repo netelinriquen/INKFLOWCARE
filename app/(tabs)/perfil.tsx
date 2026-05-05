@@ -1,29 +1,35 @@
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
-  Alert, Modal, Pressable, ScrollView, StyleSheet,
-  Switch, Text, TextInput, TouchableOpacity, View,
+  Alert, Modal, Platform, Pressable, ScrollView, StyleSheet,
+  Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/auth';
 
 const historicoInicial = [
-  { id: 1, nome: 'Dragão nas costas', artista: 'Carlos Ink', data: '10/07/2025', status: 'em_cuidado' },
-  { id: 2, nome: 'Rosa no braço', artista: 'Ana Tattoo', data: '15/03/2025', status: 'concluida' },
-  { id: 3, nome: 'Mandala na perna', artista: 'Pedro Art', data: '02/11/2024', status: 'concluida' },
+  { id: 1, nome: 'Dragão nas Costas', artista: 'Carlos Ink', data: '10/07/2025', status: 'em_cuidado' },
+  { id: 2, nome: 'Sleeve Japonês', artista: 'Carlos Ink', data: '15/03/2025', status: 'em_cuidado' },
+  { id: 3, nome: 'Borboleta no Pulso', artista: 'Ana Ink', data: '02/01/2025', status: 'concluida' },
 ];
 
 export default function PerfilScreen() {
-  const { logout } = useAuth();
-  const [nome, setNome] = useState('João Silva');
-  const [email, setEmail] = useState('joao@email.com');
+  const { logout, user } = useAuth();
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
   const [nomeEdit, setNomeEdit] = useState('');
   const [emailEdit, setEmailEdit] = useState('');
   const [modalVisivel, setModalVisivel] = useState(false);
   const [notificacoes, setNotificacoes] = useState(true);
   const [temaEscuro, setTemaEscuro] = useState(true);
   const [historico] = useState(historicoInicial);
+
+  useEffect(() => {
+    if (user) {
+      setNome(user.fullName || user.nome || '');
+      setEmail(user.email || '');
+    }
+  }, [user]);
 
   function abrirEditar() {
     setNomeEdit(nome);
@@ -53,152 +59,139 @@ export default function PerfilScreen() {
   }
 
   async function handleLogout() {
-    Alert.alert('Sair da conta', 'Tens a certeza que queres sair?', [
-      { text: 'Cancelar', style: 'cancel' },
-      { 
-        text: 'Sair', 
-        style: 'destructive', 
-        onPress: async () => {
-          await logout();
-        }
-      },
-    ]);
+    if (Platform.OS === 'web') {
+      const confirmou = window.confirm('Tens a certeza que queres sair?');
+      if (confirmou) {
+        await logout();
+      }
+    } else {
+      Alert.alert('Sair da conta', 'Tens a certeza que queres sair?', [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Sair',
+          style: 'destructive',
+          onPress: async () => {
+            await logout();
+          }
+        },
+      ]);
+    }
   }
 
   const emCuidado = historico.filter((t) => t.status === 'em_cuidado').length;
   const concluidas = historico.filter((t) => t.status === 'concluida').length;
 
   return (
-    <LinearGradient colors={['#000000', '#0a0a2e', '#0d1b4b']} style={styles.gradient}>
+    <View style={styles.container}>
       <SafeAreaView style={styles.safe}>
+        {/* TopAppBar - matches HTML: h-16 bg-[#0e0e0e]/90 border-b border-white/5 */}
+        <View style={styles.topBar}>
+          <TouchableOpacity style={styles.topBarBtn} activeOpacity={0.7}>
+            <Ionicons name="arrow-back" size={24} color="#e63946" />
+          </TouchableOpacity>
+          <Text style={styles.topBarTitle}>PERFIL</Text>
+          <View style={{ width: 40 }} />
+        </View>
+
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-          {/* Avatar e nome */}
+          {/* Avatar & Info - matches HTML section */}
           <View style={styles.avatarSection}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarLetra}>{nome[0]}</Text>
+              <Text style={styles.avatarLetra}>{(nome || 'M')[0].toUpperCase()}</Text>
             </View>
-            <Text style={styles.nome}>{nome}</Text>
-            <Text style={styles.email}>{email}</Text>
+            <Text style={styles.nome}>{nome || 'Matheus Lima'}</Text>
+            <Text style={styles.email}>{email || 'matheus@email.com'}</Text>
             <TouchableOpacity style={styles.editBtn} onPress={abrirEditar} activeOpacity={0.7}>
-              <Ionicons name="pencil-outline" size={14} color="#FF0000" />
               <Text style={styles.editBtnText}>Editar perfil</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Stats */}
-          <View style={styles.statsRow}>
+          {/* Stats Card - matches HTML: bg-surface-container-highest rounded-xl p-6 */}
+          <View style={styles.statsCard}>
             <View style={styles.statItem}>
               <Text style={styles.statNum}>{historico.length}</Text>
-              <Text style={styles.statLabel}>Tatuagens</Text>
+              <Text style={styles.statLabel}>TATUAGENS</Text>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.statItem}>
-              <Text style={[styles.statNum, { color: '#FF0000' }]}>{emCuidado}</Text>
-              <Text style={styles.statLabel}>Em cuidado</Text>
+              <Text style={[styles.statNum, { color: '#FF4757' }]}>{emCuidado}</Text>
+              <Text style={styles.statLabel}>EM CUIDADO</Text>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.statItem}>
-              <Text style={[styles.statNum, { color: '#00AA44' }]}>{concluidas}</Text>
-              <Text style={styles.statLabel}>Concluídas</Text>
+              <Text style={[styles.statNum, { color: '#22c55e' }]}>{concluidas}</Text>
+              <Text style={styles.statLabel}>CONCLUÍDAS</Text>
             </View>
           </View>
 
-          {/* Histórico */}
+          {/* Minhas tatuagens - matches HTML tattoo cards */}
           <Text style={styles.sectionTitle}>Minhas tatuagens</Text>
-          {historico.map((t) => (
-            <View key={t.id} style={styles.tatuagemCard}>
-              <View style={styles.tatuagemIcone}>
-                <Ionicons name="color-palette-outline" size={22} color="#FF0000" />
-              </View>
-              <View style={styles.tatuagemInfo}>
-                <Text style={styles.tatuagemNome}>{t.nome}</Text>
-                <Text style={styles.tatuagemSub}>{t.artista} · {t.data}</Text>
-              </View>
-              <View style={[styles.statusBadge, t.status === 'em_cuidado' ? styles.statusAtivo : styles.statusConcluido]}>
-                <Text style={[styles.statusText, t.status === 'em_cuidado' ? styles.statusAtivoText : styles.statusConcluidoText]}>
-                  {t.status === 'em_cuidado' ? 'Ativo' : 'Concluído'}
-                </Text>
-              </View>
-            </View>
-          ))}
+          <View style={styles.tatuagensContainer}>
+            {historico.map((t) => (
+              <TouchableOpacity key={t.id} style={styles.tatuagemCard} activeOpacity={0.7}>
+                <View style={styles.tatuagemInfo}>
+                  <Text style={styles.tatuagemNome}>{t.nome}</Text>
+                  <Text style={styles.tatuagemSub}>{t.artista} · {t.data}</Text>
+                </View>
+                <View style={[
+                  styles.statusBadge,
+                  t.status === 'em_cuidado' ? styles.statusAtivo : styles.statusConcluido
+                ]}>
+                  <Text style={[
+                    styles.statusText,
+                    t.status === 'em_cuidado' ? styles.statusAtivoText : styles.statusConcluidoText
+                  ]}>
+                    {t.status === 'em_cuidado' ? 'ATIVO' : 'CONCLUÍDO'}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
 
-          {/* Configurações */}
+          {/* Configurações - matches HTML settings section */}
           <Text style={styles.sectionTitle}>Configurações</Text>
-          <View style={styles.opcoesContainer}>
-
-            {/* Notificações com toggle */}
-            <View style={[styles.opcaoItem, styles.opcaoBorder]}>
-              <View style={styles.opcaoLeft}>
-                <View style={styles.opcaoIcone}>
-                  <Ionicons name="notifications-outline" size={18} color="#FF0000" />
-                </View>
-                <View>
-                  <Text style={styles.opcaoTitulo}>Notificações</Text>
-                  <Text style={styles.opcaoSub}>{notificacoes ? 'Ativadas' : 'Desativadas'}</Text>
-                </View>
+          <View style={styles.settingsContainer}>
+            {/* Notificações toggle */}
+            <TouchableOpacity
+              style={[styles.settingItem, styles.settingBorder]}
+              onPress={() => setNotificacoes(!notificacoes)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.settingText}>Notificações</Text>
+              <View style={[styles.toggleTrack, notificacoes && styles.toggleTrackOn]}>
+                <View style={[styles.toggleThumb, notificacoes && styles.toggleThumbOn]} />
               </View>
-              <Switch
-                value={notificacoes}
-                onValueChange={setNotificacoes}
-                trackColor={{ false: '#333', true: 'rgba(255,0,0,0.4)' }}
-                thumbColor={notificacoes ? '#FF0000' : '#666'}
-              />
-            </View>
+            </TouchableOpacity>
 
-            {/* Tema escuro com toggle */}
-            <View style={[styles.opcaoItem, styles.opcaoBorder]}>
-              <View style={styles.opcaoLeft}>
-                <View style={styles.opcaoIcone}>
-                  <Ionicons name="moon-outline" size={18} color="#FF0000" />
-                </View>
-                <View>
-                  <Text style={styles.opcaoTitulo}>Tema escuro</Text>
-                  <Text style={styles.opcaoSub}>{temaEscuro ? 'Ativado' : 'Desativado'}</Text>
-                </View>
+            {/* Tema escuro toggle */}
+            <TouchableOpacity
+              style={[styles.settingItem, styles.settingBorder]}
+              onPress={() => setTemaEscuro(!temaEscuro)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.settingText}>Tema escuro</Text>
+              <View style={[styles.toggleTrack, temaEscuro && styles.toggleTrackOn]}>
+                <View style={[styles.toggleThumb, temaEscuro && styles.toggleThumbOn]} />
               </View>
-              <Switch
-                value={temaEscuro}
-                onValueChange={setTemaEscuro}
-                trackColor={{ false: '#333', true: 'rgba(255,0,0,0.4)' }}
-                thumbColor={temaEscuro ? '#FF0000' : '#666'}
-              />
-            </View>
+            </TouchableOpacity>
 
             {/* Privacidade */}
-            <TouchableOpacity style={[styles.opcaoItem, styles.opcaoBorder]} onPress={handlePrivacidade} activeOpacity={0.7}>
-              <View style={styles.opcaoLeft}>
-                <View style={styles.opcaoIcone}>
-                  <Ionicons name="shield-outline" size={18} color="#FF0000" />
-                </View>
-                <View>
-                  <Text style={styles.opcaoTitulo}>Privacidade</Text>
-                  <Text style={styles.opcaoSub}>Gerenciar dados</Text>
-                </View>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color="#555" />
+            <TouchableOpacity style={[styles.settingItem, styles.settingBorder]} onPress={handlePrivacidade} activeOpacity={0.7}>
+              <Text style={styles.settingText}>Privacidade</Text>
+              <Ionicons name="chevron-forward" size={20} color="#adaaaa" />
             </TouchableOpacity>
 
             {/* Ajuda */}
-            <TouchableOpacity style={styles.opcaoItem} onPress={handleAjuda} activeOpacity={0.7}>
-              <View style={styles.opcaoLeft}>
-                <View style={styles.opcaoIcone}>
-                  <Ionicons name="help-circle-outline" size={18} color="#FF0000" />
-                </View>
-                <View>
-                  <Text style={styles.opcaoTitulo}>Ajuda</Text>
-                  <Text style={styles.opcaoSub}>FAQ e suporte</Text>
-                </View>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color="#555" />
+            <TouchableOpacity style={styles.settingItem} onPress={handleAjuda} activeOpacity={0.7}>
+              <Text style={styles.settingText}>Ajuda</Text>
+              <Ionicons name="chevron-forward" size={20} color="#adaaaa" />
             </TouchableOpacity>
-
           </View>
 
-          {/* Sair */}
-          <TouchableOpacity style={styles.sairBtn} onPress={handleLogout} activeOpacity={0.7}>
-            <Ionicons name="log-out-outline" size={18} color="#FF0000" />
-            <Text style={styles.sairText}>Sair da conta</Text>
+          {/* Logout Button */}
+          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.7}>
+            <Text style={styles.logoutText}>Sair da conta</Text>
           </TouchableOpacity>
 
         </ScrollView>
@@ -217,7 +210,7 @@ export default function PerfilScreen() {
 
             <Text style={styles.modalLabel}>Nome</Text>
             <View style={styles.modalInput}>
-              <Ionicons name="person-outline" size={18} color="#888" style={{ marginRight: 10 }} />
+              <Ionicons name="person-outline" size={18} color="#adaaaa" style={{ marginRight: 10 }} />
               <TextInput
                 style={styles.modalInputText}
                 value={nomeEdit}
@@ -229,7 +222,7 @@ export default function PerfilScreen() {
 
             <Text style={styles.modalLabel}>Email</Text>
             <View style={styles.modalInput}>
-              <Ionicons name="mail-outline" size={18} color="#888" style={{ marginRight: 10 }} />
+              <Ionicons name="mail-outline" size={18} color="#adaaaa" style={{ marginRight: 10 }} />
               <TextInput
                 style={styles.modalInputText}
                 value={emailEdit}
@@ -247,102 +240,160 @@ export default function PerfilScreen() {
           </View>
         </View>
       </Modal>
-
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  gradient: { flex: 1 },
+  container: { flex: 1, backgroundColor: '#0e0e0e' },
   safe: { flex: 1 },
-  scroll: { paddingHorizontal: 22, paddingBottom: 30 },
+  scroll: { paddingHorizontal: 24, paddingBottom: 120 },
 
-  avatarSection: { alignItems: 'center', marginTop: 24, marginBottom: 24 },
+  // TopAppBar: h-16 bg-[#0e0e0e]/90 border-b border-white/5
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    height: 64,
+    backgroundColor: 'rgba(14,14,14,0.9)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
+  },
+  topBarBtn: {
+    width: 40, height: 40,
+    justifyContent: 'center', alignItems: 'center',
+    borderRadius: 20,
+  },
+  // font-headline font-bold text-lg tracking-tighter uppercase
+  topBarTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#fff',
+    letterSpacing: -0.5,
+    textTransform: 'uppercase',
+  },
+
+  // Avatar section - centered
+  avatarSection: { alignItems: 'center', marginTop: 32, marginBottom: 32 },
   avatar: {
     width: 80, height: 80, borderRadius: 40,
-    backgroundColor: 'rgba(255,0,0,0.15)',
-    borderWidth: 2, borderColor: 'rgba(255,0,0,0.4)',
-    justifyContent: 'center', alignItems: 'center', marginBottom: 12,
+    backgroundColor: 'rgba(255,71,87,0.3)',
+    borderWidth: 2, borderColor: '#FF4757',
+    justifyContent: 'center', alignItems: 'center', marginBottom: 16,
   },
-  avatarLetra: { fontSize: 32, fontWeight: '700', color: '#FF0000' },
-  nome: { fontSize: 20, fontWeight: '700', color: '#fff' },
-  email: { fontSize: 13, color: '#888', marginTop: 4 },
+  avatarLetra: { fontSize: 32, fontWeight: '700', color: '#FF4757' },
+  nome: { fontSize: 20, fontWeight: '700', color: '#fff', letterSpacing: -0.5 },
+  // text-[#999] text-[13px] mb-4
+  email: { fontSize: 13, color: '#999', marginTop: 4, marginBottom: 16 },
+  // border border-[#FF4757] rounded-full px-6 py-2
   editBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    marginTop: 12, paddingHorizontal: 16, paddingVertical: 6,
-    borderWidth: 1, borderColor: 'rgba(255,0,0,0.3)',
-    borderRadius: 20, backgroundColor: 'rgba(255,0,0,0.05)',
+    paddingHorizontal: 24, paddingVertical: 8,
+    borderWidth: 1, borderColor: '#FF4757',
+    borderRadius: 20, backgroundColor: 'transparent',
   },
-  editBtnText: { color: '#FF0000', fontSize: 13, fontWeight: '600' },
+  // text-[#FF4757] text-[13px] font-semibold
+  editBtnText: { color: '#FF4757', fontSize: 13, fontWeight: '600', letterSpacing: 0.3 },
 
-  statsRow: {
-    flexDirection: 'row', justifyContent: 'space-around',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 14, padding: 18, marginBottom: 28,
+  // Stats Card: bg-surface-container-highest rounded-xl p-6 border border-white/5
+  statsCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#262626',
+    borderRadius: 12,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
+    marginBottom: 32,
   },
-  statItem: { alignItems: 'center' },
-  statNum: { fontSize: 24, fontWeight: '700', color: '#fff' },
-  statLabel: { fontSize: 12, color: '#888', marginTop: 4 },
-  statDivider: { width: 1, backgroundColor: 'rgba(255,255,255,0.1)' },
+  statItem: { flex: 1, alignItems: 'center' },
+  statNum: { fontSize: 26, fontWeight: '700', color: '#fff', marginBottom: 4 },
+  statLabel: {
+    fontSize: 11, color: '#999',
+    textTransform: 'uppercase', letterSpacing: 1, fontWeight: '700',
+  },
+  // w-[1px] h-10 bg-surface-bright
+  statDivider: { width: 1, height: 40, backgroundColor: '#2c2c2c' },
 
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#fff', marginBottom: 12 },
+  sectionTitle: {
+    fontSize: 18, fontWeight: '800', color: '#fff',
+    marginBottom: 16, letterSpacing: -0.5,
+  },
 
+  // Tattoo cards container
+  tatuagensContainer: { gap: 12, marginBottom: 32 },
   tatuagemCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 12, padding: 14, marginBottom: 8,
-  },
-  tatuagemIcone: {
-    width: 44, height: 44, borderRadius: 22,
-    backgroundColor: 'rgba(255,0,0,0.1)',
-    justifyContent: 'center', alignItems: 'center',
+    flexDirection: 'row', alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#262626',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 12, padding: 18,
   },
   tatuagemInfo: { flex: 1 },
-  tatuagemNome: { fontSize: 14, fontWeight: '600', color: '#fff' },
-  tatuagemSub: { fontSize: 12, color: '#888', marginTop: 2 },
-  statusBadge: { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1 },
-  statusAtivo: { backgroundColor: 'rgba(255,0,0,0.1)', borderColor: 'rgba(255,0,0,0.3)' },
-  statusConcluido: { backgroundColor: 'rgba(0,170,68,0.1)', borderColor: 'rgba(0,170,68,0.3)' },
-  statusText: { fontSize: 11, fontWeight: '600' },
-  statusAtivoText: { color: '#FF0000' },
-  statusConcluidoText: { color: '#00AA44' },
+  tatuagemNome: { fontSize: 15, fontWeight: '700', color: '#fff', marginBottom: 4 },
+  tatuagemSub: { fontSize: 13, color: '#999' },
+  statusBadge: { borderRadius: 6, paddingHorizontal: 10, paddingVertical: 4 },
+  statusAtivo: { backgroundColor: '#FF4757' },
+  statusConcluido: { backgroundColor: '#22c55e' },
+  statusText: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase' },
+  statusAtivoText: { color: '#fff' },
+  statusConcluidoText: { color: '#fff' },
 
-  opcoesContainer: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 14, marginBottom: 20, overflow: 'hidden',
+  // Settings: bg-surface-container-highest rounded-xl border border-white/5
+  settingsContainer: {
+    backgroundColor: '#262626',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
+    overflow: 'hidden',
+    marginBottom: 16,
   },
-  opcaoItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16 },
-  opcaoBorder: { borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)' },
-  opcaoLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  opcaoIcone: {
-    width: 36, height: 36, borderRadius: 18,
-    backgroundColor: 'rgba(255,0,0,0.1)',
-    justifyContent: 'center', alignItems: 'center',
+  settingItem: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    padding: 18,
   },
-  opcaoTitulo: { fontSize: 14, fontWeight: '600', color: '#fff' },
-  opcaoSub: { fontSize: 12, color: '#888', marginTop: 2 },
+  settingBorder: { borderBottomWidth: 1, borderBottomColor: '#2c2c2c' },
+  settingText: { fontSize: 16, fontWeight: '500', color: '#fff' },
 
-  sairBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    borderWidth: 1.5, borderColor: 'rgba(255,0,0,0.3)',
-    borderRadius: 12, height: 50,
-    backgroundColor: 'rgba(255,0,0,0.05)',
+  // Custom toggle styles matching reference
+  toggleTrack: {
+    width: 48, height: 28, borderRadius: 14,
+    backgroundColor: '#333',
+    justifyContent: 'center',
+    paddingHorizontal: 2,
   },
-  sairText: { color: '#FF0000', fontSize: 15, fontWeight: '600' },
+  toggleTrackOn: {
+    backgroundColor: '#ff8d8c',
+  },
+  toggleThumb: {
+    width: 24, height: 24, borderRadius: 12,
+    backgroundColor: '#fff',
+  },
+  toggleThumbOn: {
+    alignSelf: 'flex-end',
+  },
 
+  logoutBtn: {
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: '#FF4757',
+    borderRadius: 12, paddingVertical: 16,
+    backgroundColor: 'rgba(255,71,87,0.08)',
+    marginTop: 16,
+  },
+  logoutText: { color: '#FF4757', fontSize: 16, fontWeight: '700' },
+
+  // Modal
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'flex-end' },
   modalContainer: {
-    backgroundColor: '#0d1b4b',
+    backgroundColor: '#1a1919',
     borderTopLeftRadius: 24, borderTopRightRadius: 24,
     padding: 24, paddingBottom: 40,
     borderTopWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
   },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
   modalTitulo: { fontSize: 18, fontWeight: '700', color: '#fff' },
-  modalLabel: { fontSize: 12, color: '#888', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 },
+  modalLabel: { fontSize: 12, color: '#adaaaa', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 },
   modalInput: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.07)',
@@ -351,8 +402,8 @@ const styles = StyleSheet.create({
   },
   modalInputText: { flex: 1, color: '#fff', fontSize: 15 },
   modalSalvarBtn: {
-    backgroundColor: '#FF0000', borderRadius: 12, height: 50,
+    backgroundColor: '#ff8d8c', borderRadius: 12, height: 50,
     justifyContent: 'center', alignItems: 'center', marginTop: 8,
   },
-  modalSalvarText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  modalSalvarText: { color: '#000', fontSize: 16, fontWeight: '700' },
 });
