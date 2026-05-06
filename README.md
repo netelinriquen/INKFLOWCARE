@@ -1,73 +1,61 @@
-# InkFlowCare Mobile 🎨
+# 📚 InkFlowCare - Documentação Consolidada
 
-Guia gamificado de cuidados pós-tatuagem, inspirado na mecânica do Duolingo. Extensão mobile de um projeto web de estúdio de tatuagem já existente.
+Bem-vindo à documentação do projeto InkFlowCare Mobile & Backend!
+Este documento serve como o único ponto de entrada para todas as informações técnicas e de arquitetura do projeto.
 
-## Stack
+---
 
-| Camada | Tecnologia |
-|--------|-----------|
-| Framework | React Native + Expo 54 |
-| Linguagem | TypeScript |
-| Navegação | Expo Router (file-based) |
-| Estado | Context API |
-| HTTP | Axios |
-| Persistência | AsyncStorage |
-| Backend | Spring Boot 3.x + Java 17 (deploy no Render) |
-| Auth | JWT (HS256, 24h) |
+## 🧭 NAVEGAÇÃO RÁPIDA
 
-## Como rodar
+Aqui estão os 6 arquivos principais que você precisa conhecer:
 
-```bash
-# 1. Instalar dependências
-npm install
+1. **[STATUS_CONSOLIDADO.md](docs/STATUS_CONSOLIDADO.md)**
+   Status real atualizado do que está funcionando e o que falta no backend e mobile.
+   *Sempre consulte este arquivo antes de iniciar qualquer desenvolvimento.*
 
-# 2. Iniciar dev server
-npx expo start
+2. **[PLANO_OTIMIZACAO.md](docs/PLANO_OTIMIZACAO.md)**
+   Plano de execução passo a passo focado em melhorar o desempenho do sistema, sem estimativas de tempo, com foco nas integrações críticas.
 
-# 3. Limpar cache (se necessário)
-npx expo start -c
+3. **[API_ENDPOINTS.md](docs/API_ENDPOINTS.md)**
+   Documentação técnica completa de todos os endpoints REST (Request/Response, estruturas DTO, métodos).
+
+4. **[SPRING_BOOT_IMPLEMENTATION.md](docs/SPRING_BOOT_IMPLEMENTATION.md)**
+   Código Java de referência para implementação no backend (Entities, Repositories, Services, Controllers).
+
+5. **[FLUXO_DE_DADOS.md](docs/FLUXO_DE_DADOS.md)**
+   Diagramas visuais de como os dados fluem entre o App Mobile e o Backend.
+
+6. **[DOCS.md](docs/DOCS.md)**
+   Documentação técnica completa do projeto mobile (arquitetura, pastas, hooks, navegação).
+
+---
+
+## 🎯 RESUMO DO PROJETO
+
+- **Backend URL**: `https://inkflowbackend-4w1g.onrender.com/api`
+- **Autenticação**: JWT (Válido por 24h)
+- **Credenciais de Teste**: `cat@gmail.com` / `cat`
+
+### O que já está pronto?
+O frontend mobile já possui 95% das funcionalidades implementadas, e o backend já possui a estrutura base de autenticação, perfil e checklist funcionando perfeitamente.
+
+### Próximos Passos
+Siga o **[PLANO_OTIMIZACAO.md](docs/PLANO_OTIMIZACAO.md)** para otimizar os 8 contratos críticos de integração entre o App e a API, garantindo estabilidade e performance sem quebrar os fluxos existentes.
+
+---
+
+## 📊 ESTRUTURA DA DOCUMENTAÇÃO
+
+```
+docs/
+├── STATUS_CONSOLIDADO.md ............... Status atual real
+├── PLANO_OTIMIZACAO.md ................. Análise de performance e plano de ação
+├── API_ENDPOINTS.md .................... Documentação de endpoints
+├── SPRING_BOOT_IMPLEMENTATION.md ....... Código Java de referência
+├── FLUXO_DE_DADOS.md ................... Diagramas visuais de fluxo
+├── DOCS.md ............................. Documentação técnica mobile
+├── GUIA_RAPIDO.md ...................... Referência rápida e checklist unificado
+└── SEED_DATA_POSTGRESQL.sql ............ Dados iniciais para popular o banco
 ```
 
-Opções de execução:
-- **Web:** pressione `w` no terminal
-- **Android:** pressione `a` (requer emulador ou Expo Go)
-- **iOS:** pressione `i` (requer simulador macOS)
-
-## Estrutura
-
-```
-app/          → Telas e navegação (Expo Router)
-components/   → Componentes reutilizáveis
-context/      → AuthContext (JWT + AsyncStorage)
-hooks/        → useCicatrizacao, useCaminho, useChecklist
-services/     → Axios com interceptor JWT
-scripts/      → Scripts de diagnóstico e teste
-docs/         → Documentação técnica, referências visuais e plano
-```
-
-## Telas
-
-| Tab | Tela | Descrição |
-|-----|------|-----------|
-| 1 | Dashboard | Progresso da tatuagem ativa + lembretes do dia |
-| 2 | Recovery Progress | Caminho estilo Duolingo com nós de progresso |
-| 3 | Explore | Guia de cuidados |
-| 4 | Perfil | Dados do usuário + configurações + histórico |
-
-## Backend
-
-API em: `https://inkflowbackend-4w1g.onrender.com/api`
-
-Login: `POST /api/auth/login` → retorna JWT + dados do usuário.
-
-## Documentação
-
-### Geral
-- Documentação técnica completa: [`docs/DOCS.md`](docs/DOCS.md)
-- Plano de implementação: [`docs/Plano_Implementação/PLANO.MD`](docs/Plano_Implementação/PLANO.MD)
-- Referências visuais (HTML): [`docs/REFERENCIAS_TELAS/`](docs/REFERENCIAS_TELAS/)
-
-### APIs Backend
-- **[Resumo Executivo](docs/RESUMO_EXECUTIVO.md)** - Ordem de implementação e prioridades
-- **[Lista de Endpoints](docs/API_ENDPOINTS.md)** - Documentação completa de todos os endpoints
-- **[Implementação Spring Boot](docs/SPRING_BOOT_IMPLEMENTATION.md)** - Código Java completo
+> **Nota:** Arquivos antigos ou redundantes foram movidos para a pasta `archive/` para manter a documentação limpa.
