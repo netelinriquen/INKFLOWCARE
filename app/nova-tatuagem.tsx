@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -44,7 +43,7 @@ export default function NovaTatuagemScreen() {
         largura,
         altura,
       });
-      Alert.alert('Tatuagem adicionada!', `"${nome}" foi adicionada ao teu acompanhamento.`, [
+      Alert.alert('Tatuagem adicionada!', `"${nome}" foi adicionada ao seu acompanhamento.`, [
         { text: 'OK', onPress: () => router.back() },
       ]);
     } catch (err: any) {
@@ -55,24 +54,25 @@ export default function NovaTatuagemScreen() {
   }
 
   return (
-    <LinearGradient colors={['#000000', '#0a0a2e', '#0d1b4b']} style={styles.gradient}>
-      <SafeAreaView style={styles.safe}>
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safe} edges={['top']}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flex}>
+          
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+              <Ionicons name="arrow-back" size={24} color="#adaaaa" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>NOVA TATUAGEM</Text>
+            <View style={{ width: 24 }} />
+          </View>
+
           <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
 
-            {/* Header */}
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-                <Ionicons name="arrow-back" size={22} color="#fff" />
-              </TouchableOpacity>
-              <Text style={styles.headerTitle}>Nova Tatuagem</Text>
-              <View style={{ width: 40 }} />
-            </View>
-
-            <Text style={styles.sectionLabel}>Informações básicas</Text>
+            <Text style={styles.sectionLabel}>INFORMAÇÕES BÁSICAS</Text>
 
             <View style={styles.inputWrapper}>
-              <Ionicons name="color-palette-outline" size={20} color="#888" style={styles.inputIcon} />
+              <Ionicons name="color-palette-outline" size={20} color="#666" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Nome da tatuagem (ex: Dragão nas costas)"
@@ -83,7 +83,7 @@ export default function NovaTatuagemScreen() {
             </View>
 
             <View style={styles.inputWrapper}>
-              <Ionicons name="person-outline" size={20} color="#888" style={styles.inputIcon} />
+              <Ionicons name="person-outline" size={20} color="#666" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Nome do artista"
@@ -94,7 +94,7 @@ export default function NovaTatuagemScreen() {
             </View>
 
             <View style={styles.inputWrapper}>
-              <Ionicons name="resize-outline" size={20} color="#888" style={styles.inputIcon} />
+              <Ionicons name="resize-outline" size={20} color="#666" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Tamanho (ex: 15x10 cm)"
@@ -104,7 +104,7 @@ export default function NovaTatuagemScreen() {
               />
             </View>
 
-            <Text style={styles.sectionLabel}>Local do corpo</Text>
+            <Text style={styles.sectionLabel}>LOCAL DO CORPO</Text>
             <View style={styles.locaisGrid}>
               {locais.map((l) => (
                 <TouchableOpacity
@@ -118,7 +118,7 @@ export default function NovaTatuagemScreen() {
               ))}
             </View>
 
-            <Text style={styles.sectionLabel}>Observações</Text>
+            <Text style={styles.sectionLabel}>OBSERVAÇÕES</Text>
             <View style={[styles.inputWrapper, styles.textAreaWrapper]}>
               <TextInput
                 style={[styles.input, styles.textArea]}
@@ -133,7 +133,7 @@ export default function NovaTatuagemScreen() {
             </View>
 
             <View style={styles.infoBox}>
-              <Ionicons name="information-circle-outline" size={18} color="#FF0000" />
+              <Ionicons name="information-circle-outline" size={20} color="#ff8d8c" />
               <Text style={styles.infoText}>
                 O cronograma de cuidados de 30 dias será iniciado automaticamente a partir de hoje.
               </Text>
@@ -144,64 +144,86 @@ export default function NovaTatuagemScreen() {
               onPress={handleSalvar}
               disabled={loading}
             >
-              <Ionicons name="checkmark-circle-outline" size={20} color="#fff" />
-              <Text style={styles.salvarBtnText}>{loading ? 'Criando...' : 'Iniciar Acompanhamento'}</Text>
+              <Ionicons name="checkmark-circle-outline" size={22} color="#0e0e0e" />
+              <Text style={styles.salvarBtnText}>{loading ? 'CRIANDO...' : 'INICIAR ACOMPANHAMENTO'}</Text>
             </Pressable>
 
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  gradient: { flex: 1 },
+  container: { flex: 1, backgroundColor: '#0e0e0e' },
   safe: { flex: 1 },
   flex: { flex: 1 },
-  scroll: { paddingHorizontal: 22, paddingBottom: 40 },
+  scroll: { paddingHorizontal: 24, paddingBottom: 40, paddingTop: 16 },
 
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 16, marginBottom: 28 },
-  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.07)', justifyContent: 'center', alignItems: 'center' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#262626',
+    backgroundColor: 'rgba(14,14,14,0.9)',
+  },
+  backBtn: { width: 24, height: 24, justifyContent: 'center', alignItems: 'center' },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#ff8d8c',
+    letterSpacing: -0.5,
+  },
 
-  sectionLabel: { fontSize: 13, color: '#888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12, marginTop: 8 },
+  sectionLabel: { 
+    fontSize: 12, 
+    color: '#adaaaa', 
+    fontWeight: '700',
+    letterSpacing: 1.5, 
+    marginBottom: 16, 
+    marginTop: 24 
+  },
 
   inputWrapper: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 12, paddingHorizontal: 14, height: 52, marginBottom: 12,
+    backgroundColor: '#131313',
+    borderWidth: 1, borderColor: '#262626',
+    borderRadius: 12, paddingHorizontal: 16, height: 56, marginBottom: 12,
   },
-  textAreaWrapper: { height: 100, alignItems: 'flex-start', paddingVertical: 14 },
-  inputIcon: { marginRight: 10 },
+  textAreaWrapper: { height: 120, alignItems: 'flex-start', paddingVertical: 16 },
+  inputIcon: { marginRight: 12 },
   input: { flex: 1, color: '#fff', fontSize: 15 },
-  textArea: { height: 80 },
+  textArea: { height: 100 },
 
-  locaisGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
+  locaisGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 8 },
   localBtn: {
-    paddingHorizontal: 16, paddingVertical: 8,
-    borderRadius: 20, borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    paddingHorizontal: 18, paddingVertical: 10,
+    borderRadius: 24, borderWidth: 1,
+    borderColor: '#262626',
+    backgroundColor: '#131313',
   },
-  localBtnAtivo: { backgroundColor: 'rgba(255,0,0,0.15)', borderColor: 'rgba(255,0,0,0.5)' },
-  localBtnText: { color: '#888', fontSize: 13, fontWeight: '500' },
-  localBtnTextAtivo: { color: '#FF0000', fontWeight: '700' },
+  localBtnAtivo: { 
+    backgroundColor: 'rgba(255, 141, 140, 0.15)', 
+    borderColor: 'rgba(255, 141, 140, 0.4)' 
+  },
+  localBtnText: { color: '#adaaaa', fontSize: 14, fontWeight: '500' },
+  localBtnTextAtivo: { color: '#ff8d8c', fontWeight: '700' },
 
   infoBox: {
-    flexDirection: 'row', alignItems: 'flex-start', gap: 10,
-    backgroundColor: 'rgba(255,0,0,0.06)',
-    borderWidth: 1, borderColor: 'rgba(255,0,0,0.2)',
-    borderRadius: 12, padding: 14, marginBottom: 24,
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: 'rgba(255, 141, 140, 0.08)',
+    borderWidth: 1, borderColor: 'rgba(255, 141, 140, 0.2)',
+    borderRadius: 12, padding: 16, marginBottom: 32, marginTop: 16,
   },
-  infoText: { color: '#ccc', fontSize: 13, flex: 1, lineHeight: 20 },
+  infoText: { color: '#adaaaa', fontSize: 13, flex: 1, lineHeight: 20 },
 
   salvarBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: '#FF0000', borderRadius: 12, height: 52,
-    shadowColor: '#FF0000', shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4, shadowRadius: 10, elevation: 6,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
+    backgroundColor: '#ff8d8c', borderRadius: 12, height: 56,
   },
-  salvarBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  salvarBtnText: { color: '#0e0e0e', fontSize: 15, fontWeight: '800', letterSpacing: 0.5 },
 });
