@@ -39,7 +39,9 @@ export default function PerfilScreen() {
   }, []);
 
   useEffect(() => {
-    Appearance.setColorScheme(temaEscuro ? 'dark' : 'light');
+    if (Platform.OS !== 'web') {
+      Appearance.setColorScheme(temaEscuro ? 'dark' : 'light');
+    }
     AsyncStorage.setItem(TEMA_KEY, String(temaEscuro));
   }, [temaEscuro]);
 
