@@ -1,76 +1,59 @@
 # InkFlowCare — Status do Projeto
 
-## ✅ Mobile (Frontend) — COMPLETO
+## ✅ Backend — 12 Endpoints (Deploy no Render)
 
-### Telas
-- [x] Login com JWT + AsyncStorage
-- [x] Dashboard (card ativo, lembretes, checklist)
-- [x] Recovery Progress (caminho Duolingo, nós, zigzag)
-- [x] Guia de Cuidados (4 fases, checklist por período, FAQ)
-- [x] Perfil (stats, badges, tatuagens, toggles, logout)
-- [x] Tela dia/[numero] (resumo XP/estrelas, checklist, dicas)
-- [x] Tela quiz/[diaId] (perguntas, feedback, resultado, XP)
-
-### Hooks
-- [x] `useCicatrizacao` — cicatrização ativa
-- [x] `useChecklist` — checklist diário + toggle
-- [x] `useCaminho` — checkpoints do caminho
-- [x] `useNotifications` — preferências de notificação
-- [x] `useBadges` — conquistas (9 badges mockados)
-- [x] `useFotos` — upload com image picker
-- [x] `useEstatisticas` — XP, streak, taxa conclusão
-- [x] `useQuiz` — perguntas + verificação + XP
-
-### Infra
-- [x] Design system (#0e0e0e, #1E1E1E, #FF4757, #ff8d8c)
-- [x] Navegação 4 tabs (grid, bandage, document, person)
-- [x] Auth guard com useEffect + router.replace
-- [x] Compatibilidade web (toggles custom, sem expo-notifications)
+| Endpoint | Método | Status |
+|----------|--------|--------|
+| `/api/badges/usuario/{id}` | GET | ✅ |
+| `/api/estatisticas/cicatrizacao/{id}` | GET | ✅ |
+| `/api/dicas/dia/{numeroDia}` | GET | ✅ |
+| `/api/fotos/cicatrizacao/{id}` | GET | ✅ |
+| `/api/fotos/cicatrizacao/{id}` | POST | ✅ |
+| `/api/fotos/{fotoId}` | DELETE | ✅ |
+| `/api/quiz/dia/{diaNumero}` | GET | ✅ |
+| `/api/quiz/responder` | POST | ✅ |
+| `/api/notificacoes/usuario/{id}` | GET | ✅ |
+| `/api/notificacoes/usuario/{id}` | PUT | ✅ |
+| `/api/cicatrizacao/**` | GET/PATCH | ✅ (já existia) |
 
 ---
 
-## 🚧 Backend (Spring Boot) — 12 ENDPOINTS PENDENTES
+## ✅ Mobile — Hooks Integrados ao Backend
 
-### Documentação criada (docs/)
-- `README.md` — ponto de entrada
-- `INDICE_COMPLETO.md` — mapa mental + glossário
-- `README_APIS.md` — guia de leitura APIs
-- `RESUMO_EXECUTIVO.md` — plano 4 fases (18h total)
-- `API_ENDPOINTS.md` — 12 endpoints com DTOs + curl
-- `SPRING_BOOT_IMPLEMENTATION.md` — código Java completo
-- `CHECKLIST_IMPLEMENTACAO.md` — progresso interativo
-- `REFERENCIA_RAPIDA.md` — tabela de consulta
-- `FLUXO_DE_DADOS.md` — diagramas ASCII
-- `SEED_DATA.sql` — badges, dicas, quiz, guia
-
-### Endpoints por fase
-
-#### 🔴 Fase 1 — ALTA (~6h)
-- [ ] `GET /badges/usuario/{id}`
-- [ ] `GET /estatisticas/cicatrizacao/{id}`
-- [ ] `GET /dicas/dia/{numero}`
-
-#### 🟡 Fase 2 — MÉDIA (~5h)
-- [ ] `POST /fotos/cicatrizacao/{id}`
-- [ ] `GET /fotos/cicatrizacao/{id}`
-- [ ] `DELETE /fotos/{id}`
-
-#### 🟡 Fase 3 — MÉDIA (~3h)
-- [ ] `GET /quiz/dia/{id}`
-- [ ] `POST /quiz/responder`
-
-#### 🟢 Fase 4 — BAIXA (~4h)
-- [ ] `GET /notificacoes/usuario/{id}`
-- [ ] `PUT /notificacoes/usuario/{id}`
-- [ ] `GET /guia/categorias`
-- [ ] `GET /guia/categoria/{id}`
+| Hook | Endpoint | Fallback |
+|------|----------|----------|
+| `useBadges` | `/api/badges/usuario/{id}` | Mock 9 badges |
+| `useQuiz` | `/api/quiz/dia/{id}` + `/quiz/responder` | Mock 5 perguntas |
+| `useEstatisticas` | `/api/estatisticas/cicatrizacao/{id}` | Mock XP/streak |
+| `useFotos` | `/api/fotos/cicatrizacao/{id}` | Mock 5 fotos |
+| `useNotifications` | `/api/notificacoes/usuario/{id}` | AsyncStorage local |
+| `useCicatrizacao` | `/api/cicatrizacao/ativa/{id}` | null |
+| `useChecklist` | `/api/cicatrizacao/checklist/**` | - |
+| `useCaminho` | `/api/cicatrizacao/caminho/**` | - |
 
 ---
 
-## 📦 Dependências instaladas
-```
-expo-notifications, expo-device, expo-image-picker
-```
+## ✅ Telas Completas
 
-## 🔑 Próximo passo
-Implementar os 12 endpoints no backend Spring Boot seguindo `docs/SPRING_BOOT_IMPLEMENTATION.md` + rodar `docs/SEED_DATA.sql`.
+- Caminho (estilo Duolingo)
+- Dia/[numero] (checklist + dicas + XP)
+- Quiz/[diaId] (perguntas + feedback)
+- Perfil (badges + notificações + histórico)
+- Explore (conteúdo educacional)
+
+---
+
+## ✅ Banco (Somee / SQL Server)
+
+Seed data populado:
+- 9 badges com critérios
+- 28 dicas com range de dias
+- 15 perguntas de quiz (dias 7, 14, 21)
+- 60 opções de quiz
+
+---
+
+## 🔑 Referências
+- Backend: `https://inkflowbackend-4w1g.onrender.com/api`
+- Branch: `teste`
+- Docs: `docs/DOCS.md`

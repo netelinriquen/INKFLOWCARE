@@ -23,7 +23,7 @@ export default function PerfilScreen() {
   const [nomeEdit, setNomeEdit] = useState('');
   const [emailEdit, setEmailEdit] = useState('');
   const [modalVisivel, setModalVisivel] = useState(false);
-  const { prefs: notifPrefs, toggleAtivas } = useNotifications();
+  const { prefs: notifPrefs, toggleAtivas } = useNotifications(user?.id);
   const notificacoes = notifPrefs.ativas;
   const [temaEscuro, setTemaEscuro] = useState(true);
   const [historico] = useState(historicoInicial);
