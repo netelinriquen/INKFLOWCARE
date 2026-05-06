@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 import {
-  Alert, Appearance, Modal, Platform, Pressable, ScrollView, StyleSheet,
+  Alert, Appearance, Image, Modal, Platform, Pressable, ScrollView, StyleSheet,
   Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -136,10 +136,17 @@ export default function PerfilScreen() {
 
           {/* Avatar & Info - matches HTML section */}
           <View style={styles.avatarSection}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarLetra}>{(nome || 'M')[0].toUpperCase()}</Text>
-            </View>
-            <Text style={styles.nome}>{nome || 'Matheus Lima'}</Text>
+            {user?.fotoUrl || user?.profileImage ? (
+              <Image
+                source={{ uri: user.fotoUrl || user.profileImage }}
+                style={styles.avatarImg}
+              />
+            ) : (
+              <View style={styles.avatar}>
+                <Text style={styles.avatarLetra}>{(nome || 'U')[0].toUpperCase()}</Text>
+              </View>
+            )}
+            <Text style={styles.nome}>{nome || 'Usuário'}</Text>
             <Text style={styles.email}>{email || 'matheus@email.com'}</Text>
             <TouchableOpacity style={styles.editBtn} onPress={abrirEditar} activeOpacity={0.7}>
               <Text style={styles.editBtnText}>Editar perfil</Text>
@@ -354,6 +361,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,71,87,0.3)',
     borderWidth: 2, borderColor: '#FF4757',
     justifyContent: 'center', alignItems: 'center', marginBottom: 16,
+  },
+  avatarImg: {
+    width: 80, height: 80, borderRadius: 40,
+    borderWidth: 2, borderColor: '#FF4757',
+    marginBottom: 16,
   },
   avatarLetra: { fontSize: 32, fontWeight: '700', color: '#FF4757' },
   nome: { fontSize: 20, fontWeight: '700', color: '#fff', letterSpacing: -0.5 },

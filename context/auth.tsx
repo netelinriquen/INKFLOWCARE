@@ -9,6 +9,7 @@ type User = {
   fullName?: string;
   telefone?: string;
   profileImage?: string;
+  fotoUrl?: string;
 };
 
 type AuthContextType = {
