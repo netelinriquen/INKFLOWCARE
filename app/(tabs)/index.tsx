@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/auth';
@@ -20,15 +19,6 @@ const faseNomes: Record<string, string> = {
   FASE_4_PROFUNDA: 'Cicatrização Profunda',
 };
 
-// Mock data fixos para visual
-const MOCK_LEMBRETES = [
-  { id: 1, hora: '08:00', titulo: 'Lavar a tatuagem', feito: true },
-  { id: 2, hora: '12:00', titulo: 'Aplicar pomada', feito: true },
-  { id: 3, hora: '15:00', titulo: 'Verificar inflamação', feito: true },
-  { id: 4, hora: '18:00', titulo: 'Aplicar pomada', feito: false },
-  { id: 5, hora: '20:00', titulo: 'Protetor solar', feito: false },
-  { id: 6, hora: '22:00', titulo: 'Aplicar pomada', feito: false },
-];
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -38,26 +28,25 @@ export default function HomeScreen() {
     cicatrizacao?.id || null,
     cicatrizacao?.diaAtual || 1
   );
-  const [lembretes, setLembretes] = useState(MOCK_LEMBRETES);
-
-  // Usa checklist real se disponível, senão usa mockado
-  const lembretesAtivos = checklist.length > 0 ? checklist.map(item => ({
+  const lembretesAtivos = checklist.map(item => ({
     id: item.id,
     hora: periodoHoras[item.periodo] || '00:00',
     titulo: item.descricao,
     feito: item.concluido,
-  })) : lembretes;
+  }));
 
   const feitos = lembretesAtivos.filter((l) => l.feito).length;
+  const semCicatrizacao = !cicatrizacao;
+
+  // Dados reais da cicatrização
+  const diaAtual = cicatrizacao?.diaAtual || 0;
+  const totalDias = cicatrizacao?.periodoTotalDias || 30;
+  const progressoPct = totalDias > 0 ? Math.round((diaAtual / totalDias) * 100) : 0;
+  const diasRestantes = totalDias - diaAtual;
+  const faseNome = cicatrizacao?.faseAtual ? (faseNomes[cicatrizacao.faseAtual] || 'Em progresso') : '';
 
   async function toggleLembrete(id: number) {
-    if (checklist.length > 0) {
-      await toggleItem(id);
-    } else {
-      setLembretes((prev) =>
-        prev.map((l) => (l.id === id ? { ...l, feito: !l.feito } : l))
-      );
-    }
+    await toggleItem(id);
   }
 
   function handleNotificacoes() {
@@ -93,90 +82,99 @@ export default function HomeScreen() {
 
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-          {/* Card principal — sempre visível com dados mockados */}
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <View>
-                <Text style={styles.cardLabel}>TATUAGEM ATIVA</Text>
-                <Text style={styles.cardTitle}>Tatuagem Braço</Text>
-              </View>
-              <View style={styles.faseBadge}>
-                <Text style={styles.faseText}>Descamação</Text>
-              </View>
+          {/* Card principal */}
+          {semCicatrizacao ? (
+            <View style={styles.emptyCard}>
+              <Ionicons name="bandage-outline" size={48} color="#555" />
+              <Text style={styles.emptyCardTitle}>Nenhuma cicatrização ativa</Text>
+              <Text style={styles.emptyCardText}>Quando você agendar uma sessão, o acompanhamento vai aparecer aqui.</Text>
             </View>
-
-            <View style={styles.progressRow}>
-              <Text style={styles.progressPercent}>60%</Text>
-              <Text style={styles.progressConcluido}>Concluído</Text>
-            </View>
-
-            <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: '60%' }]} />
-            </View>
-
-            <View style={styles.cardInfo}>
-              <View style={styles.cardInfoItem}>
-                <Text style={styles.cardInfoLabel}>Progresso</Text>
-                <Text style={styles.cardInfoValue}>18/30 dias</Text>
-              </View>
-              <View style={styles.cardInfoItem}>
-                <Text style={styles.cardInfoLabel}>Restante</Text>
-                <Text style={[styles.cardInfoValue, styles.cardInfoValueRed]}>12 dias</Text>
-              </View>
-              <View style={styles.cardInfoItem}>
-                <Text style={styles.cardInfoLabel}>Artista</Text>
-                <View style={styles.cardInfoRow}>
-                  <Ionicons name="brush-outline" size={14} color="#999" />
-                  <Text style={styles.cardInfoValue}>Carlos Ink</Text>
+          ) : (
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <View>
+                  <Text style={styles.cardLabel}>TATUAGEM ATIVA</Text>
+                  <Text style={styles.cardTitle}>{cicatrizacao.agendamento?.regiao || 'Tatuagem'}</Text>
+                </View>
+                <View style={styles.faseBadge}>
+                  <Text style={styles.faseText}>{faseNome}</Text>
                 </View>
               </View>
-              <View style={styles.cardInfoItem}>
-                <Text style={styles.cardInfoLabel}>Data</Text>
-                <View style={styles.cardInfoRow}>
-                  <Ionicons name="calendar-outline" size={14} color="#999" />
-                  <Text style={styles.cardInfoValue}>10/07/2025</Text>
+
+              <View style={styles.progressRow}>
+                <Text style={styles.progressPercent}>{progressoPct}%</Text>
+                <Text style={styles.progressConcluido}>Concluído</Text>
+              </View>
+
+              <View style={styles.progressBar}>
+                <View style={[styles.progressFill, { width: `${progressoPct}%` }]} />
+              </View>
+
+              <View style={styles.cardInfo}>
+                <View style={styles.cardInfoItem}>
+                  <Text style={styles.cardInfoLabel}>Progresso</Text>
+                  <Text style={styles.cardInfoValue}>{diaAtual}/{totalDias} dias</Text>
+                </View>
+                <View style={styles.cardInfoItem}>
+                  <Text style={styles.cardInfoLabel}>Restante</Text>
+                  <Text style={[styles.cardInfoValue, styles.cardInfoValueRed]}>{diasRestantes} dias</Text>
+                </View>
+                <View style={styles.cardInfoItem}>
+                  <Text style={styles.cardInfoLabel}>Artista</Text>
+                  <View style={styles.cardInfoRow}>
+                    <Ionicons name="brush-outline" size={14} color="#999" />
+                    <Text style={styles.cardInfoValue}>{cicatrizacao.agendamento?.artista?.nome || 'N/A'}</Text>
+                  </View>
+                </View>
+                <View style={styles.cardInfoItem}>
+                  <Text style={styles.cardInfoLabel}>Início</Text>
+                  <View style={styles.cardInfoRow}>
+                    <Ionicons name="calendar-outline" size={14} color="#999" />
+                    <Text style={styles.cardInfoValue}>{cicatrizacao.dataInicio ? new Date(cicatrizacao.dataInicio).toLocaleDateString('pt-BR') : 'N/A'}</Text>
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
+          )}
 
           {/* Lembretes de hoje */}
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Lembretes de hoje</Text>
-            <Text style={styles.sectionCounter}>{feitos}/{lembretesAtivos.length} feitos</Text>
-          </View>
+          {lembretesAtivos.length > 0 && (
+            <>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Lembretes de hoje</Text>
+                <Text style={styles.sectionCounter}>{feitos}/{lembretesAtivos.length} feitos</Text>
+              </View>
 
-          {/* Barra de progresso fina */}
-          <View style={styles.thinProgressBar}>
-            <View style={[styles.thinProgressFill, { width: `${(feitos / lembretesAtivos.length) * 100}%` }]} />
-          </View>
+              <View style={styles.thinProgressBar}>
+                <View style={[styles.thinProgressFill, { width: `${lembretesAtivos.length > 0 ? (feitos / lembretesAtivos.length) * 100 : 0}%` }]} />
+              </View>
 
-          <View style={styles.lembretesContainer}>
-            {lembretesAtivos.map((l) => (
-              <TouchableOpacity
-                key={l.id}
-                style={styles.lembrete}
-                onPress={() => toggleLembrete(l.id)}
-                activeOpacity={0.7}
-              >
-                {/* Checkbox */}
-                {l.feito ? (
-                  <View style={styles.checkboxChecked}>
-                    <Ionicons name="checkmark" size={16} color="#fff" />
-                  </View>
-                ) : (
-                  <View style={styles.checkboxUnchecked} />
-                )}
-                {/* Text */}
-                <View style={[styles.lembreteTextRow, l.feito && { opacity: 0.5 }]}>
-                  <Text style={[styles.lembreteTitulo, l.feito && styles.lembreteTextoFeito]}>
-                    {l.titulo}
-                  </Text>
-                  <Text style={styles.lembreteHora}>{l.hora}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
+              <View style={styles.lembretesContainer}>
+                {lembretesAtivos.map((l) => (
+                  <TouchableOpacity
+                    key={l.id}
+                    style={styles.lembrete}
+                    onPress={() => toggleLembrete(l.id)}
+                    activeOpacity={0.7}
+                  >
+                    {l.feito ? (
+                      <View style={styles.checkboxChecked}>
+                        <Ionicons name="checkmark" size={16} color="#fff" />
+                      </View>
+                    ) : (
+                      <View style={styles.checkboxUnchecked} />
+                    )}
+                    <View style={[styles.lembreteTextRow, l.feito && { opacity: 0.5 }]}>
+                      <Text style={[styles.lembreteTitulo, l.feito && styles.lembreteTextoFeito]}>
+                        {l.titulo}
+                      </Text>
+                      <Text style={styles.lembreteHora}>{l.hora}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </>
+          )}
 
           {/* Botão adicionar tatuagem */}
           <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/nova-tatuagem')} activeOpacity={0.7}>
@@ -225,6 +223,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF9500', justifyContent: 'center', alignItems: 'center',
   },
   notifBadgeText: { color: '#fff', fontSize: 10, fontWeight: '700' },
+
+  // Empty state card
+  emptyCard: {
+    backgroundColor: '#1E1E1E', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 12, padding: 40, marginBottom: 32, marginTop: 24,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  emptyCardTitle: { color: '#fff', fontSize: 16, fontWeight: '600', marginTop: 12 },
+  emptyCardText: { color: '#777', fontSize: 13, textAlign: 'center', marginTop: 6, paddingHorizontal: 20 },
 
   // Card principal
   card: {

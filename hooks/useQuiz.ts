@@ -10,53 +10,6 @@ export interface QuizQuestion {
   xpBonus: number;
 }
 
-const MOCK_QUIZZES: Record<number, QuizQuestion[]> = {
-  7: [
-    {
-      id: 1,
-      pergunta: 'Qual é o melhor momento para aplicar pomada cicatrizante?',
-      opcoes: ['Antes de lavar', 'Depois de lavar e secar', 'Junto com sabão', 'Não precisa aplicar'],
-      respostaCorreta: 1,
-      explicacao: 'A pomada deve ser aplicada sempre após lavar e secar a tatuagem com papel toalha. Isso garante máxima absorção.',
-      xpBonus: 15,
-    },
-    {
-      id: 2,
-      pergunta: 'Por que NÃO se deve arrancar as casquinhas?',
-      opcoes: ['Dói muito', 'Pode causar manchas e perda de cor', 'Não faz diferença', 'Demora mais para curar'],
-      respostaCorreta: 1,
-      explicacao: 'Arrancar as casquinhas pode remover junto o pigmento da tinta, causando falhas e manchas permanentes na tatuagem.',
-      xpBonus: 15,
-    },
-    {
-      id: 3,
-      pergunta: 'Quantas vezes por dia deve-se lavar a tatuagem na fase inicial?',
-      opcoes: ['1 vez', '2-3 vezes', '5 vezes', 'Não precisa lavar'],
-      respostaCorreta: 1,
-      explicacao: 'Lavar 2-3 vezes ao dia com sabão neutro é o ideal. Pouco demais causa acúmulo de bactérias, muito demais resseca.',
-      xpBonus: 15,
-    },
-  ],
-  14: [
-    {
-      id: 4,
-      pergunta: 'Quando pode usar protetor solar na tatuagem?',
-      opcoes: ['Imediatamente', 'Após 3 dias', 'Após 2 semanas', 'Nunca'],
-      respostaCorreta: 2,
-      explicacao: 'O protetor solar só deve ser usado após a cicatrização superficial completa (~2 semanas). Antes disso pode irritar.',
-      xpBonus: 15,
-    },
-    {
-      id: 5,
-      pergunta: 'Qual FPS mínimo recomendado para proteger tatuagem?',
-      opcoes: ['FPS 15', 'FPS 30', 'FPS 50+', 'Qualquer FPS'],
-      respostaCorreta: 2,
-      explicacao: 'FPS 50+ é o mínimo recomendado. O sol UV degrada o pigmento da tinta e desbota as cores com o tempo.',
-      xpBonus: 15,
-    },
-  ],
-};
-
 export function useQuiz(checkpointDiaId?: number) {
   const [perguntas, setPerguntas] = useState<QuizQuestion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,14 +32,11 @@ export function useQuiz(checkpointDiaId?: number) {
       if (response.data && response.data.length > 0) {
         setPerguntas(response.data);
       } else {
-        // Fallback para mock
-        const mock = MOCK_QUIZZES[checkpointDiaId] || MOCK_QUIZZES[7] || [];
-        setPerguntas(mock);
+        setPerguntas([]);
       }
     } catch (error) {
-      console.log('[QUIZ] Usando dados mockados:', error);
-      const mock = MOCK_QUIZZES[checkpointDiaId] || MOCK_QUIZZES[7] || [];
-      setPerguntas(mock);
+      console.log('[QUIZ] Erro ao buscar quiz:', error);
+      setPerguntas([]);
     } finally {
       setLoading(false);
     }

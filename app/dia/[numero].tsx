@@ -48,23 +48,6 @@ const dicasPorFase: Record<string, { icone: string; cor: string; texto: string }
   ],
 };
 
-// Mock: checklist mockado para quando não há dados reais
-const MOCK_CHECKLIST = {
-  MANHA: [
-    { id: 1, periodo: 'MANHA', ordem: 1, descricao: 'Lavar a tatuagem com sabão neutro', concluido: true },
-    { id: 2, periodo: 'MANHA', ordem: 2, descricao: 'Secar com toalha de papel (não esfregar)', concluido: true },
-    { id: 3, periodo: 'MANHA', ordem: 3, descricao: 'Aplicar pomada cicatrizante', concluido: false },
-  ],
-  TARDE: [
-    { id: 4, periodo: 'TARDE', ordem: 1, descricao: 'Verificar vermelhidão ou inchaço', concluido: false },
-    { id: 5, periodo: 'TARDE', ordem: 2, descricao: 'Aplicar pomada cicatrizante', concluido: false },
-  ],
-  NOITE: [
-    { id: 6, periodo: 'NOITE', ordem: 1, descricao: 'Lavar a tatuagem novamente', concluido: false },
-    { id: 7, periodo: 'NOITE', ordem: 2, descricao: 'Aplicar pomada antes de dormir', concluido: false },
-    { id: 8, periodo: 'NOITE', ordem: 3, descricao: 'Usar roupa de algodão para dormir', concluido: false },
-  ],
-};
 
 export default function DiaScreen() {
   const router = useRouter();
@@ -87,31 +70,25 @@ export default function DiaScreen() {
   }, [numeroDia]);
 
   const loading = cicLoading || checklistLoading;
-  const usandoMock = checklist.length === 0 && !loading;
+  const semCicatrizacao = !cicatrizacao && !cicLoading;
 
   // Agrupar checklist por período
-  const checklistPorPeriodo = usandoMock
-    ? MOCK_CHECKLIST
-    : {
-        MANHA: checklist.filter(item => item.periodo === 'MANHA').sort((a, b) => a.ordem - b.ordem),
-        TARDE: checklist.filter(item => item.periodo === 'TARDE').sort((a, b) => a.ordem - b.ordem),
-        NOITE: checklist.filter(item => item.periodo === 'NOITE').sort((a, b) => a.ordem - b.ordem),
-      };
+  const checklistPorPeriodo = {
+    MANHA: checklist.filter(item => item.periodo === 'MANHA').sort((a, b) => a.ordem - b.ordem),
+    TARDE: checklist.filter(item => item.periodo === 'TARDE').sort((a, b) => a.ordem - b.ordem),
+    NOITE: checklist.filter(item => item.periodo === 'NOITE').sort((a, b) => a.ordem - b.ordem),
+  };
 
-  const allItems = usandoMock
-    ? [...MOCK_CHECKLIST.MANHA, ...MOCK_CHECKLIST.TARDE, ...MOCK_CHECKLIST.NOITE]
-    : checklist;
-  const totalItens = allItems.length;
-  const itensConcluidos = allItems.filter((item: any) => item.concluido).length;
+  const totalItens = checklist.length;
+  const itensConcluidos = checklist.filter((item: any) => item.concluido).length;
   const progresso = totalItens > 0 ? (itensConcluidos / totalItens) * 100 : 0;
 
-  // Determinar fase — usar backend ou fallback
-  const faseAtual = cicatrizacao?.faseAtual || 'FASE_3_DESCAMACAO';
-  const dicasFallback = dicasPorFase[faseAtual] || dicasPorFase.FASE_3_DESCAMACAO;
-  // Preferir dicas do backend, fallback para hardcoded
-  const dicas = dicasBackend.length > 0
-    ? dicasBackend.map(d => ({ icone: d.icone || 'information-circle-outline', cor: '#3B82F6', texto: d.descricao }))
-    : dicasFallback;
+  // Dicas do backend apenas
+  const dicas = dicasBackend.map(d => ({
+    icone: d.icone || 'information-circle-outline',
+    cor: '#3B82F6',
+    texto: d.descricao,
+  }));
 
   const temQuiz = [7, 14, 21, 28].includes(numeroDia);
 
@@ -120,9 +97,7 @@ export default function DiaScreen() {
   const xpGanho = Math.round(progresso * 2);
 
   async function handleToggle(itemId: number) {
-    if (!usandoMock) {
-      await toggleItem(itemId);
-    }
+    await toggleItem(itemId);
   }
 
   return (
@@ -219,6 +194,18 @@ export default function DiaScreen() {
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#FF4757" />
               <Text style={styles.loadingText}>Carregando checklist...</Text>
+            </View>
+          ) : semCicatrizacao ? (
+            <View style={styles.emptyState}>
+              <Ionicons name="bandage-outline" size={48} color="#555" />
+              <Text style={styles.emptyTitle}>Sem cicatrização ativa</Text>
+              <Text style={styles.emptyText}>Agende uma sessão para iniciar o acompanhamento dos seus cuidados.</Text>
+            </View>
+          ) : checklist.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Ionicons name="checkmark-done-outline" size={48} color="#555" />
+              <Text style={styles.emptyTitle}>Sem tarefas para este dia</Text>
+              <Text style={styles.emptyText}>Confira as dicas abaixo para manter sua tatuagem saudável.</Text>
             </View>
           ) : (
             <>
@@ -413,6 +400,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center', paddingVertical: 60,
   },
   loadingText: { color: '#999', marginTop: 12, fontSize: 13 },
+
+  // Empty state
+  emptyState: {
+    justifyContent: 'center', alignItems: 'center', paddingVertical: 40,
+    backgroundColor: '#1E1E1E', borderRadius: 12, marginBottom: 24,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+  },
+  emptyTitle: { color: '#fff', fontSize: 16, fontWeight: '600', marginTop: 12 },
+  emptyText: { color: '#777', fontSize: 13, textAlign: 'center', marginTop: 6, paddingHorizontal: 32 },
 
   // Período sections
   periodoSection: { marginBottom: 24 },
