@@ -168,19 +168,10 @@ export default function CuidadosScreen() {
   const [periodoAtivo, setPeriodoAtivo] = useState<'manha' | 'tarde' | 'noite'>('manha');
   const [checklistFeito, setChecklistFeito] = useState<Record<string, boolean>>({});
   const [faqAberta, setFaqAberta] = useState<number | null>(null);
+  const [alertaAberto, setAlertaAberto] = useState<number | null>(null);
 
   function toggleChecklist(key: string) {
     setChecklistFeito((prev) => ({ ...prev, [key]: !prev[key] }));
-  }
-
-  function handleAlerta(alerta: typeof alertas[0]) {
-    const mensagem = `${alerta.descricao}\n\n${alerta.nivel === 'alto' ? '⚠️ Procure um médico ou dermatologista imediatamente.' : '💡 Monitore e continue com os cuidados.'}`;
-    
-    if (Platform.OS === 'web') {
-      window.alert(`Sinal de alerta: ${alerta.texto}\n\n${mensagem}`);
-    } else {
-      Alert.alert('Sinal de alerta', `${alerta.texto}\n\n${mensagem}`, [{ text: 'Entendido' }]);
-    }
   }
 
   return (
@@ -290,16 +281,29 @@ export default function CuidadosScreen() {
           </View>
           <Text style={styles.alertaIntro}>Toque para saber mais sobre cada sinal:</Text>
           {alertas.map((a, i) => (
-            <TouchableOpacity
-              key={i}
-              style={[styles.alertaItem, a.nivel === 'alto' && styles.alertaAlto]}
-              onPress={() => handleAlerta(a)}
-              activeOpacity={0.7}
-            >
-              <Ionicons name={a.icone as any} size={18} color={a.nivel === 'alto' ? '#ff8d8c' : '#FFD700'} />
-              <Text style={styles.alertaTexto}>{a.texto}</Text>
-              <Ionicons name="chevron-forward" size={14} color="#555" />
-            </TouchableOpacity>
+            <View key={i} style={[styles.alertaContainer, a.nivel === 'alto' && styles.alertaContainerAlto]}>
+              <TouchableOpacity
+                style={styles.alertaItem}
+                onPress={() => setAlertaAberto(alertaAberto === i ? null : i)}
+                activeOpacity={0.7}
+              >
+                <Ionicons name={a.icone as any} size={18} color={a.nivel === 'alto' ? '#ff8d8c' : '#FFD700'} />
+                <Text style={styles.alertaTexto}>{a.texto}</Text>
+                <Ionicons name={alertaAberto === i ? 'chevron-up' : 'chevron-down'} size={14} color="#555" />
+              </TouchableOpacity>
+              
+              {alertaAberto === i && (
+                <View style={styles.alertaBody}>
+                  <Text style={styles.alertaDescricao}>{a.descricao}</Text>
+                  <View style={[styles.alertaAvisoBox, a.nivel === 'alto' && styles.alertaAvisoBoxAlto]}>
+                    <Ionicons name={a.nivel === 'alto' ? 'warning' : 'bulb'} size={16} color={a.nivel === 'alto' ? '#ff8d8c' : '#FFD700'} />
+                    <Text style={[styles.alertaAvisoTexto, a.nivel === 'alto' && styles.alertaAvisoTextoAlto]}>
+                      {a.nivel === 'alto' ? 'Procure um médico ou dermatologista imediatamente.' : 'Fique tranquilo(a), monitore e siga o guia.'}
+                    </Text>
+                  </View>
+                </View>
+              )}
+            </View>
           ))}
 
           {/* Produtos recomendados */}
@@ -447,14 +451,36 @@ const styles = StyleSheet.create({
 
   // Alertas
   alertaIntro: { fontSize: 13, color: '#999', marginBottom: 10 },
+  alertaContainer: {
+    backgroundColor: '#131313',
+    borderRadius: 10, marginBottom: 8,
+    borderWidth: 1, borderColor: '#262626',
+    overflow: 'hidden',
+  },
+  alertaContainerAlto: {
+    borderColor: 'rgba(255,141,140,0.2)', backgroundColor: 'rgba(255,141,140,0.02)',
+  },
   alertaItem: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#131313',
-    borderRadius: 10, padding: 14, marginBottom: 8,
-    borderWidth: 1, borderColor: '#262626',
+    padding: 14,
   },
-  alertaAlto: { borderColor: 'rgba(255,141,140,0.2)', backgroundColor: 'rgba(255,141,140,0.05)' },
-  alertaTexto: { fontSize: 13, color: '#ddd', flex: 1 },
+  alertaTexto: { fontSize: 13, color: '#ddd', flex: 1, fontWeight: '500' },
+  alertaBody: {
+    paddingHorizontal: 14, paddingBottom: 14,
+  },
+  alertaDescricao: { fontSize: 13, color: '#999', lineHeight: 20, marginBottom: 12 },
+  alertaAvisoBox: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 8,
+    backgroundColor: 'rgba(255,215,0,0.05)',
+    padding: 10, borderRadius: 8,
+    borderLeftWidth: 3, borderLeftColor: '#FFD700',
+  },
+  alertaAvisoBoxAlto: {
+    backgroundColor: 'rgba(255,141,140,0.08)',
+    borderLeftColor: '#ff8d8c',
+  },
+  alertaAvisoTexto: { fontSize: 12, color: '#FFD700', flex: 1, lineHeight: 16 },
+  alertaAvisoTextoAlto: { color: '#ff8d8c', fontWeight: '600' },
 
   // Produtos
   produtosCard: {
