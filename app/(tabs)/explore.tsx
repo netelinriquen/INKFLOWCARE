@@ -8,7 +8,7 @@ const fases = [
     id: 1,
     titulo: 'Fase 1 — Primeiras 24h',
     dias: 'Dia 1',
-    cor: '#FF4757',
+    cor: '#ff8d8c',
     icone: 'bandage-outline',
     descricao: 'A tatuagem está recém-feita. A pele está inflamada e sensível. Esta é a fase mais crítica.',
     rotina: {
@@ -181,9 +181,9 @@ export default function CuidadosScreen() {
       <SafeAreaView style={styles.safe}>
         {/* Header */}
         <View style={styles.header}>
-          <Ionicons name="book-outline" size={22} color="#ff8d8c" />
+          <View style={{ width: 24 }} />
           <Text style={styles.headerTitle}>GUIA DE CUIDADOS</Text>
-          <View style={{ width: 22 }} />
+          <View style={{ width: 24 }} />
         </View>
 
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -277,7 +277,7 @@ export default function CuidadosScreen() {
               onPress={() => handleAlerta(a.texto)}
               activeOpacity={0.7}
             >
-              <Ionicons name={a.icone as any} size={18} color={a.nivel === 'alto' ? '#FF4757' : '#FFD700'} />
+              <Ionicons name={a.icone as any} size={18} color={a.nivel === 'alto' ? '#ff8d8c' : '#FFD700'} />
               <Text style={styles.alertaTexto}>{a.texto}</Text>
               <Ionicons name="chevron-forward" size={14} color="#555" />
             </TouchableOpacity>
@@ -294,7 +294,7 @@ export default function CuidadosScreen() {
               { nome: 'Bepantol líquido', uso: 'Hidratação extra em pele muito seca' },
             ].map((p, i, arr) => (
               <View key={i} style={[styles.produtoItem, i < arr.length - 1 && styles.produtoBorder]}>
-                <Ionicons name="checkmark-circle" size={18} color="#FF4757" />
+                <Ionicons name="checkmark-circle" size={18} color="#ff8d8c" />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.produtoNome}>{p.nome}</Text>
                   <Text style={styles.produtoUso}>{p.uso}</Text>
@@ -334,19 +334,28 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10,
-    paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#262626',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#262626',
+    backgroundColor: 'rgba(14,14,14,0.9)',
   },
   headerTitle: {
-    fontSize: 18, fontWeight: '700', color: '#ff8d8c', letterSpacing: 2,
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#ff8d8c',
+    letterSpacing: -0.5,
   },
 
   pageSub: { fontSize: 14, color: '#999', marginTop: 20, marginBottom: 24 },
 
   // Fases
   faseCard: {
-    backgroundColor: '#1E1E1E',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: '#131313',
+    borderWidth: 1, borderColor: '#262626',
     borderRadius: 12, marginBottom: 10, overflow: 'hidden',
   },
   faseHeader: {
@@ -374,9 +383,9 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
     alignItems: 'center',
   },
-  periodoBtnAtivo: { backgroundColor: 'rgba(255,71,87,0.15)', borderColor: 'rgba(255,71,87,0.4)' },
+  periodoBtnAtivo: { backgroundColor: 'rgba(255,141,140,0.15)', borderColor: 'rgba(255,141,140,0.4)' },
   periodoBtnText: { fontSize: 11, color: '#666', fontWeight: '600' },
-  periodoBtnTextAtivo: { color: '#FF4757' },
+  periodoBtnTextAtivo: { color: '#ff8d8c' },
 
   // Checklist
   checklistTitulo: { fontSize: 12, color: '#999', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 10 },
@@ -394,7 +403,7 @@ const styles = StyleSheet.create({
   },
   checkBoxChecked: {
     width: 22, height: 22, borderRadius: 11,
-    backgroundColor: '#FF4757',
+    backgroundColor: '#ff8d8c',
     justifyContent: 'center', alignItems: 'center',
     marginTop: 1,
   },
@@ -413,18 +422,18 @@ const styles = StyleSheet.create({
   alertaIntro: { fontSize: 13, color: '#999', marginBottom: 10 },
   alertaItem: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#131313',
     borderRadius: 10, padding: 14, marginBottom: 8,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1, borderColor: '#262626',
   },
-  alertaAlto: { borderColor: 'rgba(255,71,87,0.2)', backgroundColor: 'rgba(255,71,87,0.05)' },
+  alertaAlto: { borderColor: 'rgba(255,141,140,0.2)', backgroundColor: 'rgba(255,141,140,0.05)' },
   alertaTexto: { fontSize: 13, color: '#ddd', flex: 1 },
 
   // Produtos
   produtosCard: {
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#131313',
     borderRadius: 12, borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: '#262626',
     overflow: 'hidden',
   },
   produtoItem: {
@@ -439,8 +448,8 @@ const styles = StyleSheet.create({
 
   // FAQ
   faqCard: {
-    backgroundColor: '#1E1E1E',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: '#131313',
+    borderWidth: 1, borderColor: '#262626',
     borderRadius: 12, marginBottom: 8, overflow: 'hidden',
   },
   faqHeader: {
