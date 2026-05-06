@@ -63,9 +63,9 @@ export default function HomeScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            {user?.profileImage ? (
+            {user?.fotoUrl || user?.profileImage ? (
               <Image
-                source={{ uri: user.profileImage }}
+                source={{ uri: user.fotoUrl || user.profileImage }}
                 style={styles.headerAvatar}
               />
             ) : (
