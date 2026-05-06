@@ -166,6 +166,7 @@ const styles = StyleSheet.create({
   logoImage: {
     width: 80, height: 80,
     marginBottom: 16,
+    tintColor: '#FFFFFF',
   },
   appName: { fontSize: 24, fontWeight: '800', color: '#fff', letterSpacing: 2 },
   appSubtitle: { fontSize: 12, color: '#adaaaa', marginTop: 6, letterSpacing: 1.5, fontWeight: '600' },
