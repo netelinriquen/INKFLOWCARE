@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "INKAPP",
+    "name": "InkFlowCare",
     "slug": "INKAPP",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.theets07.INKAPP"
     },
     "web": {
       "output": "static",
@@ -43,6 +44,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b0be5592-b2fb-4d44-900a-4b9fb27b593f"
+      }
     }
   }
 }

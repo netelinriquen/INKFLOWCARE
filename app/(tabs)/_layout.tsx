@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { HapticTab } from '@/components/haptic-tab';
 import { useAuth } from '@/context/auth';
 
 export default function TabLayout() {
@@ -36,7 +35,6 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarButton: HapticTab,
         tabBarStyle: {
           backgroundColor: '#111',
           borderTopColor: '#222',
