@@ -43,9 +43,9 @@ async function agendarNotificacoes(prefs: NotifPreferences) {
   if (!prefs.ativas) return;
 
   const periodos = [
-    { horario: prefs.horarioManha, titulo: 'Cuidados da manhã ☀️', corpo: 'Hora de lavar e hidratar sua tatuagem!' },
-    { horario: prefs.horarioTarde, titulo: 'Cuidados da tarde 🌤️', corpo: 'Não esqueça de reaplicar a pomada!' },
-    { horario: prefs.horarioNoite, titulo: 'Cuidados da noite 🌙', corpo: 'Último cuidado do dia antes de dormir.' },
+    { horario: prefs.horarioManha, titulo: 'Cuidados da manhã', corpo: 'Hora de lavar e hidratar sua tatuagem!' },
+    { horario: prefs.horarioTarde, titulo: 'Cuidados da tarde', corpo: 'Não esqueça de reaplicar a pomada!' },
+    { horario: prefs.horarioNoite, titulo: 'Cuidados da noite', corpo: 'Último cuidado do dia antes de dormir.' },
   ];
 
   for (const p of periodos) {
