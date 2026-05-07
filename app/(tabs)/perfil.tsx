@@ -105,7 +105,7 @@ export default function PerfilScreen() {
   function handleAjuda() {
     showAlert(
       'Ajuda & Suporte',
-      'Para suporte, entra em contacto:\n\n📧 suporte@inkflowcare.com\n\nVersão do app: 1.0.0',
+      'Para suporte, entra em contacto pelo email:\n\nsuporte@inkflowcare.com\n\nVersão do app: 1.0.0',
       [{ text: 'OK' }],
       'help-circle'
     );
