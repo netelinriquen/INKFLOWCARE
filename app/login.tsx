@@ -28,6 +28,15 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [modalVisivel, setModalVisivel] = useState(false);
 
+  // Estados de Recuperação de Senha
+  const [recuperacaoVisivel, setRecuperacaoVisivel] = useState(false);
+  const [recuperacaoStep, setRecuperacaoStep] = useState(1);
+  const [recuperacaoEmail, setRecuperacaoEmail] = useState('');
+  const [recuperacaoOtp, setRecuperacaoOtp] = useState('');
+  const [recuperacaoNovaSenha, setRecuperacaoNovaSenha] = useState('');
+  const [recuperacaoLoading, setRecuperacaoLoading] = useState(false);
+  const [recuperacaoErro, setRecuperacaoErro] = useState('');
+
   // Já logado → vai para tabs
   if (logado && !authLoading) {
     return <Redirect href="/(tabs)" />;
@@ -66,6 +75,62 @@ export default function LoginScreen() {
     
     setModalVisivel(false);
     Linking.openURL(fullUrl);
+  }
+
+  // Lógica mockada para a recuperação (pronto para ligar com a API Real depois)
+  async function handleRecuperacaoStep1() {
+    if (!/\S+@\S+\.\S+/.test(recuperacaoEmail)) {
+      setRecuperacaoErro('Insira um e-mail válido.');
+      return;
+    }
+    setRecuperacaoErro('');
+    setRecuperacaoLoading(true);
+    // Simula chamada POST /api/auth/recuperar-senha
+    setTimeout(() => {
+      setRecuperacaoLoading(false);
+      setRecuperacaoStep(2); // Avança para inserir os 6 dígitos
+    }, 1500);
+  }
+
+  async function handleRecuperacaoStep2() {
+    if (recuperacaoOtp.length < 6) {
+      setRecuperacaoErro('O código deve ter 6 dígitos.');
+      return;
+    }
+    setRecuperacaoErro('');
+    setRecuperacaoLoading(true);
+    // Simula chamada POST /api/auth/validar-codigo-senha
+    setTimeout(() => {
+      setRecuperacaoLoading(false);
+      setRecuperacaoStep(3); // Avança para nova senha
+    }, 1500);
+  }
+
+  async function handleRecuperacaoStep3() {
+    if (recuperacaoNovaSenha.length < 6) {
+      setRecuperacaoErro('A senha deve ter no mínimo 6 caracteres.');
+      return;
+    }
+    setRecuperacaoErro('');
+    setRecuperacaoLoading(true);
+    // Simula chamada POST /api/auth/redefinir-senha
+    setTimeout(() => {
+      setRecuperacaoLoading(false);
+      setRecuperacaoVisivel(false);
+      setRecuperacaoStep(1);
+      setRecuperacaoEmail('');
+      setRecuperacaoOtp('');
+      setRecuperacaoNovaSenha('');
+      Alert.alert('Sucesso!', 'Sua senha foi redefinida. Você já pode fazer login.');
+    }, 1500);
+  }
+
+  function fecharRecuperacao() {
+    setRecuperacaoVisivel(false);
+    setRecuperacaoErro('');
+    setRecuperacaoStep(1);
+    setRecuperacaoOtp('');
+    setRecuperacaoNovaSenha('');
   }
 
   return (
@@ -129,7 +194,7 @@ export default function LoginScreen() {
                 </View>
               )}
 
-              <Pressable style={styles.forgotPassword} onPress={() => Alert.alert('Recuperar senha', 'Insira o seu email e enviaremos um link de recuperação.\n\n(Funcionalidade disponível em breve)')}>
+              <Pressable style={styles.forgotPassword} onPress={() => setRecuperacaoVisivel(true)}>
                 <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
               </Pressable>
 
@@ -203,6 +268,103 @@ export default function LoginScreen() {
             </View>
           </View>
         </View>
+      </Modal>
+
+      {/* Modal de Recuperação de Senha */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={recuperacaoVisivel}
+        onRequestClose={fecharRecuperacao}
+      >
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+          <View style={[styles.modalOverlay, { justifyContent: 'flex-end', padding: 0 }]}>
+            <View style={styles.bottomSheet}>
+              <View style={styles.bottomSheetHeader}>
+                <Text style={styles.bottomSheetTitle}>
+                  {recuperacaoStep === 1 && 'Recuperar Senha'}
+                  {recuperacaoStep === 2 && 'Código de Segurança'}
+                  {recuperacaoStep === 3 && 'Nova Senha'}
+                </Text>
+                <Pressable onPress={fecharRecuperacao} hitSlop={15}>
+                  <Ionicons name="close" size={24} color="#666" />
+                </Pressable>
+              </View>
+
+              <Text style={styles.bottomSheetDesc}>
+                {recuperacaoStep === 1 && 'Enviaremos um código de 6 dígitos para o seu e-mail para validar sua identidade.'}
+                {recuperacaoStep === 2 && `Enviamos um código para ${recuperacaoEmail}. Digite-o abaixo:`}
+                {recuperacaoStep === 3 && 'Crie uma nova senha segura para acessar sua conta.'}
+              </Text>
+
+              {recuperacaoStep === 1 && (
+                <View style={[styles.inputWrapper, recuperacaoErro ? styles.inputErro : null, { marginBottom: 24 }]}>
+                  <Ionicons name="mail-outline" size={20} color="#666" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Seu email"
+                    placeholderTextColor="#555"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    value={recuperacaoEmail}
+                    onChangeText={(v) => { setRecuperacaoEmail(v); setRecuperacaoErro(''); }}
+                  />
+                </View>
+              )}
+
+              {recuperacaoStep === 2 && (
+                <View style={[styles.inputWrapper, recuperacaoErro ? styles.inputErro : null, { marginBottom: 24 }]}>
+                  <Ionicons name="keypad-outline" size={20} color="#666" style={styles.inputIcon} />
+                  <TextInput
+                    style={[styles.input, { letterSpacing: 8, fontSize: 20, textAlign: 'center' }]}
+                    placeholder="000000"
+                    placeholderTextColor="#555"
+                    keyboardType="number-pad"
+                    maxLength={6}
+                    value={recuperacaoOtp}
+                    onChangeText={(v) => { setRecuperacaoOtp(v.replace(/[^0-9]/g, '')); setRecuperacaoErro(''); }}
+                  />
+                </View>
+              )}
+
+              {recuperacaoStep === 3 && (
+                <View style={[styles.inputWrapper, recuperacaoErro ? styles.inputErro : null, { marginBottom: 24 }]}>
+                  <Ionicons name="lock-closed-outline" size={20} color="#666" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Nova senha"
+                    placeholderTextColor="#555"
+                    secureTextEntry={true}
+                    value={recuperacaoNovaSenha}
+                    onChangeText={(v) => { setRecuperacaoNovaSenha(v); setRecuperacaoErro(''); }}
+                  />
+                </View>
+              )}
+
+              {!!recuperacaoErro && (
+                <Text style={{ color: '#ff8d8c', fontSize: 13, marginBottom: 16, marginTop: -8 }}>{recuperacaoErro}</Text>
+              )}
+
+              <Pressable
+                style={({ pressed }) => [styles.loginButton, { marginTop: 0 }, (pressed || recuperacaoLoading) && styles.pressed]}
+                onPress={() => {
+                  if (recuperacaoStep === 1) handleRecuperacaoStep1();
+                  if (recuperacaoStep === 2) handleRecuperacaoStep2();
+                  if (recuperacaoStep === 3) handleRecuperacaoStep3();
+                }}
+                disabled={recuperacaoLoading}
+              >
+                {recuperacaoLoading ? (
+                  <ActivityIndicator color="#0e0e0e" />
+                ) : (
+                  <Text style={styles.loginButtonText}>
+                    {recuperacaoStep === 3 ? 'REDEFINIR SENHA' : 'CONTINUAR'}
+                  </Text>
+                )}
+              </Pressable>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
 
     </View>
@@ -304,4 +466,18 @@ const styles = StyleSheet.create({
   },
   modalButtonCancelText: { color: '#fff', fontSize: 15, fontWeight: '600' },
   modalButtonConfirmText: { color: '#0e0e0e', fontSize: 15, fontWeight: '700' },
+
+  // Bottom Sheet (Recuperação de Senha)
+  bottomSheet: {
+    backgroundColor: '#131313', width: '100%',
+    borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    padding: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24,
+    borderWidth: 1, borderColor: '#262626', borderBottomWidth: 0,
+  },
+  bottomSheetHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    marginBottom: 16,
+  },
+  bottomSheetTitle: { fontSize: 20, fontWeight: '700', color: '#fff' },
+  bottomSheetDesc: { fontSize: 14, color: '#adaaaa', lineHeight: 20, marginBottom: 24 },
 });
