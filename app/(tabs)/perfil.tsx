@@ -86,15 +86,23 @@ export default function PerfilScreen() {
   }
 
   function handlePrivacidade() {
-    Alert.alert('Privacidade', 'Os teus dados são armazenados localmente no dispositivo e nunca partilhados com terceiros.', [{ text: 'OK' }]);
+    if (Platform.OS === 'web') {
+      window.alert('Privacidade\n\nOs teus dados são armazenados localmente no dispositivo e nunca partilhados com terceiros.');
+    } else {
+      Alert.alert('Privacidade', 'Os teus dados são armazenados localmente no dispositivo e nunca partilhados com terceiros.', [{ text: 'OK' }]);
+    }
   }
 
   function handleAjuda() {
-    Alert.alert(
-      'Ajuda & Suporte',
-      'Para suporte, entra em contacto:\n\n📧 suporte@inkflowcare.com\n\nVersão do app: 1.0.0',
-      [{ text: 'OK' }]
-    );
+    if (Platform.OS === 'web') {
+      window.alert('Ajuda & Suporte\n\nPara suporte, entra em contacto:\n\n📧 suporte@inkflowcare.com\n\nVersão do app: 1.0.0');
+    } else {
+      Alert.alert(
+        'Ajuda & Suporte',
+        'Para suporte, entra em contacto:\n\n📧 suporte@inkflowcare.com\n\nVersão do app: 1.0.0',
+        [{ text: 'OK' }]
+      );
+    }
   }
 
   async function handleLogout() {
