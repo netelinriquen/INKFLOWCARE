@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 import {
   Alert, Appearance, Image, Modal, Platform, Pressable, ScrollView, StyleSheet,
-  Text, TextInput, TouchableOpacity, View,
+  Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -32,6 +32,7 @@ export default function PerfilScreen() {
   const notificacoes = notifPrefs.ativas;
   const [temaEscuro, setTemaEscuro] = useState(true);
   const [historico, setHistorico] = useState<any[]>([]);
+  const [visibleTattoos, setVisibleTattoos] = useState(3);
   const { showAlert } = useCustomAlert();
 
   useEffect(() => {
@@ -189,25 +190,37 @@ export default function PerfilScreen() {
           <View style={styles.tatuagensContainer}>
             {historico.length === 0 ? (
               <Text style={{ color: '#666', fontSize: 13, textAlign: 'center', paddingVertical: 16 }}>Nenhuma tatuagem registrada.</Text>
-            ) : historico.map((t) => (
-              <TouchableOpacity key={t.id} style={styles.tatuagemCard} activeOpacity={0.7}>
-                <View style={styles.tatuagemInfo}>
-                  <Text style={styles.tatuagemNome}>{t.agendamento?.regiao || 'Tatuagem'}</Text>
-                  <Text style={styles.tatuagemSub}>{t.agendamento?.artista?.nome || 'Artista'} · {t.dataInicio ? new Date(t.dataInicio).toLocaleDateString('pt-BR') : ''}</Text>
-                </View>
-                <View style={[
-                  styles.statusBadge,
-                  t.status === 'ATIVA' ? styles.statusAtivo : styles.statusConcluido
-                ]}>
-                  <Text style={[
-                    styles.statusText,
-                    t.status === 'ATIVA' ? styles.statusAtivoText : styles.statusConcluidoText
-                  ]}>
-                    {t.status === 'ATIVA' ? 'ATIVO' : 'CONCLUÍDO'}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+            ) : (
+              <>
+                {historico.slice(0, visibleTattoos).map((t) => (
+                  <TouchableOpacity key={t.id} style={styles.tatuagemCard} activeOpacity={0.7}>
+                    <View style={styles.tatuagemInfo}>
+                      <Text style={styles.tatuagemNome}>{t.agendamento?.regiao || 'Tatuagem'}</Text>
+                      <Text style={styles.tatuagemSub}>{t.agendamento?.artista?.nome || 'Artista'} · {t.dataInicio ? new Date(t.dataInicio).toLocaleDateString('pt-BR') : ''}</Text>
+                    </View>
+                    <View style={[
+                      styles.statusBadge,
+                      t.status === 'ATIVA' ? styles.statusAtivo : styles.statusConcluido
+                    ]}>
+                      <Text style={[
+                        styles.statusText,
+                        t.status === 'ATIVA' ? styles.statusAtivoText : styles.statusConcluidoText
+                      ]}>
+                        {t.status === 'ATIVA' ? 'ATIVO' : 'CONCLUÍDO'}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+                {historico.length > visibleTattoos && (
+                  <TouchableOpacity 
+                    style={{ marginTop: 16, alignItems: 'center', paddingVertical: 8 }} 
+                    onPress={() => setVisibleTattoos(prev => prev + 3)}
+                  >
+                    <Text style={{ color: '#e63946', fontSize: 14, fontWeight: 'bold' }}>+ Carregar mais</Text>
+                  </TouchableOpacity>
+                )}
+              </>
+            )}
           </View>
 
           {/* Conquistas / Badges */}
@@ -292,46 +305,50 @@ export default function PerfilScreen() {
 
       {/* Modal editar perfil */}
       <Modal visible={modalVisivel} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitulo}>Editar perfil</Text>
-              <TouchableOpacity onPress={() => setModalVisivel(false)}>
-                <Ionicons name="close" size={22} color="#fff" />
-              </TouchableOpacity>
-            </View>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }}>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitulo}>Editar perfil</Text>
+                  <TouchableOpacity onPress={() => setModalVisivel(false)}>
+                    <Ionicons name="close" size={22} color="#fff" />
+                  </TouchableOpacity>
+                </View>
 
-            <Text style={styles.modalLabel}>Nome</Text>
-            <View style={styles.modalInput}>
-              <Ionicons name="person-outline" size={18} color="#adaaaa" style={{ marginRight: 10 }} />
-              <TextInput
-                style={styles.modalInputText}
-                value={nomeEdit}
-                onChangeText={setNomeEdit}
-                placeholderTextColor="#555"
-                placeholder="Teu nome"
-              />
-            </View>
+                <Text style={styles.modalLabel}>Nome</Text>
+                <View style={styles.modalInput}>
+                  <Ionicons name="person-outline" size={18} color="#adaaaa" style={{ marginRight: 10 }} />
+                  <TextInput
+                    style={styles.modalInputText}
+                    value={nomeEdit}
+                    onChangeText={setNomeEdit}
+                    placeholderTextColor="#555"
+                    placeholder="Teu nome"
+                  />
+                </View>
 
-            <Text style={styles.modalLabel}>Email</Text>
-            <View style={styles.modalInput}>
-              <Ionicons name="mail-outline" size={18} color="#adaaaa" style={{ marginRight: 10 }} />
-              <TextInput
-                style={[styles.modalInputText, { color: '#777' }]}
-                value={emailEdit}
-                editable={false}
-                placeholderTextColor="#555"
-                placeholder="Teu email"
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
+                <Text style={styles.modalLabel}>Email</Text>
+                <View style={styles.modalInput}>
+                  <Ionicons name="mail-outline" size={18} color="#adaaaa" style={{ marginRight: 10 }} />
+                  <TextInput
+                    style={[styles.modalInputText, { color: '#777' }]}
+                    value={emailEdit}
+                    editable={false}
+                    placeholderTextColor="#555"
+                    placeholder="Teu email"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
 
-            <Pressable style={({ pressed }) => [styles.modalSalvarBtn, pressed && { opacity: 0.8 }]} onPress={salvarPerfil}>
-              <Text style={styles.modalSalvarText}>Salvar alterações</Text>
-            </Pressable>
+                <Pressable style={({ pressed }) => [styles.modalSalvarBtn, pressed && { opacity: 0.8 }]} onPress={salvarPerfil}>
+                  <Text style={styles.modalSalvarText}>Salvar alterações</Text>
+                </Pressable>
+              </ScrollView>
+            </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );

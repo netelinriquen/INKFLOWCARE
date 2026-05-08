@@ -29,7 +29,6 @@ export default function CaminhoScreen() {
   const loading = cicLoading || caminhoLoading;
   const semCicatrizacao = !cicatrizacao && !cicLoading;
 
-  const diasCompletos = caminho.filter(c => c.statusDia === 'COMPLETO').length;
   const totalDias = cicatrizacao?.periodoTotalDias || 30;
   const diaAtual = cicatrizacao?.diaAtual || 0;
   const progresso = totalDias > 0 ? Math.round((diaAtual / totalDias) * 100) : 0;
