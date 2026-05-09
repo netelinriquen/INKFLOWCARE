@@ -22,6 +22,8 @@ export default function RootLayout() {
             <Stack.Screen name="login" options={{ headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="nova-tatuagem" options={{ headerShown: false }} />
+            <Stack.Screen name="cadastro" options={{ headerShown: false }} />
+            <Stack.Screen name="verificacao" options={{ headerShown: false }} />
           </Stack>
           <StatusBar style="auto" />
         </ThemeProvider>
