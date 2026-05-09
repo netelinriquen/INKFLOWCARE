@@ -21,8 +21,9 @@ export default function AlterarSenha() {
       showAlert('Atenção', 'Preencha todos os campos.', [{ text: 'OK' }], 'warning');
       return;
     }
-    if (novaSenha.length < 6) {
-      showAlert('Atenção', 'A nova senha deve ter no mínimo 6 caracteres.', [{ text: 'OK' }], 'warning');
+    const senhaRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+    if (!senhaRegex.test(novaSenha)) {
+      showAlert('Atenção', 'A nova senha não atende aos requisitos de segurança.', [{ text: 'OK' }], 'warning');
       return;
     }
     if (novaSenha !== confirmarSenha) {
@@ -67,7 +68,7 @@ export default function AlterarSenha() {
                 <Text style={styles.sectionTitle}>Segurança da Conta</Text>
               </View>
               <Text style={styles.sectionText}>
-                Para manter sua conta segura, utilize uma senha forte com letras, números e no mínimo 6 caracteres.
+                A senha deve ter no mínimo 8 caracteres, incluindo uma letra maiúscula, um número e um caractere especial (!@#$%^&*)
               </Text>
 
               {/* Senha Atual */}
