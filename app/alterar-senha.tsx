@@ -83,7 +83,7 @@ export default function AlterarSenha() {
                   editable={!loading}
                 />
                 <TouchableOpacity onPress={() => setShowSenhaAtual(!showSenhaAtual)} style={styles.eyeBtn}>
-                  <Ionicons name={showSenhaAtual ? "eye-off" : "eye"} size={20} color="#888" />
+                  <Ionicons name={showSenhaAtual ? "eye" : "eye-off"} size={20} color="#888" />
                 </TouchableOpacity>
               </View>
 
@@ -100,7 +100,7 @@ export default function AlterarSenha() {
                   editable={!loading}
                 />
                 <TouchableOpacity onPress={() => setShowNovaSenha(!showNovaSenha)} style={styles.eyeBtn}>
-                  <Ionicons name={showNovaSenha ? "eye-off" : "eye"} size={20} color="#888" />
+                  <Ionicons name={showNovaSenha ? "eye" : "eye-off"} size={20} color="#888" />
                 </TouchableOpacity>
               </View>
 
