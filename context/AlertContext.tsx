@@ -82,7 +82,7 @@ export function CustomAlertProvider({ children }: { children: React.ReactNode })
               <Ionicons 
                 name={alertState.icon || 'information-circle-outline'} 
                 size={32} 
-                color={alertState.buttons.some(b => b.style === 'destructive') ? '#ff4444' : '#ff8d8c'} 
+                color={alertState.buttons.some(b => b.style === 'destructive') ? '#ff8d8c' : '#ff8d8c'} 
               />
             </View>
 
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 141, 140, 0.1)',
   },
   iconContainerDestructive: {
-    backgroundColor: 'rgba(255, 68, 68, 0.1)',
+    backgroundColor: 'rgba(255, 141, 140, 0.1)',
   },
   title: {
     fontSize: 22, fontWeight: '700', color: '#fff', marginBottom: 12, textAlign: 'center'
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   },
   buttonDestructive: {
     backgroundColor: 'transparent',
-    borderWidth: 1, borderColor: '#ff4444',
+    borderWidth: 1, borderColor: '#ff8d8c',
   },
   buttonDefault: {
     backgroundColor: '#ff8d8c',
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   buttonTextDestructive: {
-    color: '#ff4444', fontWeight: '700',
+    color: '#ff8d8c', fontWeight: '700',
   },
   buttonTextDefault: {
     color: '#0e0e0e', fontWeight: '700',
