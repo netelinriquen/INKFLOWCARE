@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
+import * as ImagePicker from 'expo-image-picker';
 import {
-  Alert, Appearance, Image, Modal, Platform, Pressable, ScrollView, StyleSheet,
+  ActivityIndicator, Appearance, Image, Modal, Platform, Pressable, ScrollView, StyleSheet,
   Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -34,6 +35,51 @@ export default function PerfilScreen() {
   const [historico, setHistorico] = useState<any[]>([]);
   const [visibleCount, setVisibleCount] = useState(3);
   const { showAlert } = useCustomAlert();
+  const [uploadingFoto, setUploadingFoto] = useState(false);
+  const [localFotoUrl, setLocalFotoUrl] = useState(user?.fotoUrl || user?.profileImage);
+
+  useEffect(() => {
+    if (user?.fotoUrl || user?.profileImage) {
+      setLocalFotoUrl(user.fotoUrl || user.profileImage);
+    }
+  }, [user]);
+
+  const alterarFoto = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      showAlert('Permissão negada', 'Precisamos acessar sua galeria para trocar a foto.', [{ text: 'OK' }], 'warning');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (result.canceled) return;
+
+    setUploadingFoto(true);
+    const formData = new FormData();
+    formData.append('file', {
+      uri: result.assets[0].uri,
+      type: 'image/jpeg',
+      name: 'foto-perfil.jpg',
+    } as any);
+
+    try {
+      const response = await api.post(`/clientes/${user?.id}/foto`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setLocalFotoUrl(response.data.fotoUrl);
+    } catch (error) {
+      console.error(error);
+      showAlert('Erro', 'Não foi possível atualizar a foto. Tente novamente.', [{ text: 'OK' }], 'close-circle');
+    } finally {
+      setUploadingFoto(false);
+    }
+  };
 
   useEffect(() => {
     AsyncStorage.getItem(TEMA_KEY).then((val) => {
@@ -134,16 +180,26 @@ export default function PerfilScreen() {
 
           {/* Avatar & Info - matches HTML section */}
           <View style={styles.avatarSection}>
-            {user?.fotoUrl || user?.profileImage ? (
-              <Image
-                source={{ uri: user.fotoUrl || user.profileImage }}
-                style={styles.avatarImg}
-              />
-            ) : (
-              <View style={styles.avatar}>
-                <Text style={styles.avatarLetra}>{(nome || 'U')[0].toUpperCase()}</Text>
+            <TouchableOpacity onPress={alterarFoto} activeOpacity={0.8} style={{ position: 'relative' }}>
+              {localFotoUrl ? (
+                <Image
+                  source={{ uri: localFotoUrl }}
+                  style={styles.avatarImg}
+                />
+              ) : (
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarLetra}>{(nome || 'U')[0].toUpperCase()}</Text>
+                </View>
+              )}
+              {uploadingFoto && (
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: 50, justifyContent: 'center', alignItems: 'center' }]}>
+                  <ActivityIndicator color="#FF4757" />
+                </View>
+              )}
+              <View style={{ position: 'absolute', bottom: 0, right: 0, backgroundColor: '#FF4757', width: 28, height: 28, borderRadius: 14, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#0e0e0e' }}>
+                <Ionicons name="camera" size={16} color="#fff" />
               </View>
-            )}
+            </TouchableOpacity>
             <Text style={styles.nome}>{nome || 'Usuário'}</Text>
             <Text style={styles.email}>{email || 'matheus@email.com'}</Text>
             <TouchableOpacity style={styles.editBtn} onPress={abrirEditar} activeOpacity={0.7}>

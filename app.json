@@ -38,6 +38,12 @@
             "backgroundColor": "#0e0e0e"
           }
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O InkFlowCare precisa acessar sua galeria para atualizar sua foto de perfil."
+        }
       ]
     ],
     "experiments": {
