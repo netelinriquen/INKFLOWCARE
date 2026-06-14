@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Meu Progresso | The Noir Atelier</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;900&amp;family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#262626",
+                        "inverse-surface": "#fcf9f8",
+                        "inverse-on-surface": "#565555",
+                        "secondary-fixed": "#ffc2cd",
+                        "on-primary-container": "#4e000a",
+                        "primary": "#ff8d8c",
+                        "on-secondary-fixed": "#6a0a2e",
+                        "tertiary-container": "#c292ff",
+                        "primary-dim": "#ff7072",
+                        "on-error": "#450900",
+                        "surface-tint": "#ff8d8c",
+                        "surface": "#0e0e0e",
+                        "tertiary-fixed-dim": "#bd8df9",
+                        "secondary": "#fb7e9e",
+                        "inverse-primary": "#bc152d",
+                        "secondary-container": "#832040",
+                        "outline": "#767575",
+                        "secondary-fixed-dim": "#ffadbe",
+                        "tertiary": "#cda4ff",
+                        "surface-container-high": "#201f1f",
+                        "on-tertiary-container": "#3d0175",
+                        "primary-fixed-dim": "#ff595f",
+                        "on-tertiary-fixed": "#25004b",
+                        "background": "#0e0e0e",
+                        "on-tertiary-fixed-variant": "#4d1c85",
+                        "on-surface-variant": "#adaaaa",
+                        "on-primary-fixed": "#000000",
+                        "error-container": "#b92902",
+                        "surface-bright": "#2c2c2c",
+                        "tertiary-dim": "#b788f3",
+                        "on-error-container": "#ffd2c8",
+                        "surface-container-highest": "#262626",
+                        "on-primary-fixed-variant": "#60000f",
+                        "on-secondary-fixed-variant": "#902b4a",
+                        "primary-fixed": "#ff7576",
+                        "error-dim": "#d53d18",
+                        "on-primary": "#640010",
+                        "tertiary-fixed": "#c99dff",
+                        "secondary-dim": "#f17796",
+                        "surface-dim": "#0e0e0e",
+                        "surface-container-lowest": "#000000",
+                        "outline-variant": "#484847",
+                        "on-secondary": "#560022",
+                        "on-tertiary": "#481680",
+                        "on-secondary-container": "#ffc0cc",
+                        "surface-container-low": "#131313",
+                        "surface-container": "#1a1919",
+                        "primary-container": "#ff7576",
+                        "error": "#ff7351",
+                        "on-background": "#ffffff",
+                        "on-surface": "#ffffff",
+                        "success": "#22c55e",
+                        "warning": "#FF8C00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Epilogue"],
+                        "display": ["Epilogue"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(38, 38, 38, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .bg-gradient-primary { background: linear-gradient(135deg, #ff8d8c 0%, #ff7072 100%); }
+        .text-gradient-primary {
+            background: linear-gradient(135deg, #ff8d8c 0%, #ff7072 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .ambient-glow { box-shadow: 0 0 40px rgba(255, 141, 140, 0.06); }
+        .pulse-glow {
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 20px rgba(255, 140, 0, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 140, 0, 0.6); }
+            100% { box-shadow: 0 0 20px rgba(255, 140, 0, 0.3); }
+        }
+
+        /* Toast Animation */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px) translateX(-50%); }
+            to { opacity: 1; transform: translateY(0) translateX(-50%); }
+        }
+        .toast-animate { 
+            animation: slideUpFade 0.3s ease-out forwards; 
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Journey Map Layout */
+        .path-container {
+            position: relative;
+            padding: 2rem 0;
+            padding-bottom: 120px;
+        }
+        .node-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 4rem;
+            transition: all 0.5s ease;
+        }
+        .node-wrapper:nth-child(even) .node-content { margin-left: auto; margin-right: 20%; }
+        .node-wrapper:nth-child(odd) .node-content { margin-right: auto; margin-left: 20%; }
+        .node-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .node-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-weight: bold;
+            transition: all 0.5s ease;
+        }
+
+        body { min-height: 100dvh; overflow-x: hidden; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body pb-24 selection:bg-primary selection:text-black">
+
+    <!-- TopAppBar -->
+    <header class="fixed top-0 w-full z-40 bg-[#0e0e0e]/90 backdrop-blur-md border-b border-[#262626] flex justify-between items-center px-6 py-4">
+        <button class="js-action-btn text-[#adaaaa] hover:text-[#ff8d8c] transition-colors duration-300 active:scale-95 transition-transform" data-action="Voltando para Home...">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+        </button>
+        <h1 class="font-['Epilogue'] font-bold tracking-tighter uppercase text-xl text-[#ff8d8c]">RECOVERY PROGRESS</h1>
+        <div class="w-6 h-6"></div> <!-- Spacer -->
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 px-4 max-w-md mx-auto relative">
+        
+        <!-- Status Card -->
+        <div class="bg-surface-container-highest p-6 rounded-lg mb-8 relative overflow-hidden glass-panel ambient-glow">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary rounded-full filter blur-[60px] opacity-20"></div>
+            <div class="flex justify-between items-end mb-2 relative z-10">
+                <div>
+                    <span class="font-label text-sm text-on-surface-variant uppercase tracking-wider block mb-1">Status Geral</span>
+                    <h2 class="font-headline text-3xl font-extrabold text-on-surface tracking-tight">Fase 2: <span class="text-gradient-primary">Cura</span></h2>
+                </div>
+                <div class="text-right">
+                    <span id="days-count" class="font-headline text-2xl font-bold text-primary transition-all duration-500">18</span>
+                    <span class="font-label text-sm text-on-surface-variant">/30 dias</span>
+                </div>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden mt-4 relative z-10">
+                <div id="progress-bar" class="bg-gradient-primary h-full w-[60%] rounded-full shadow-[0_0_10px_rgba(255,141,140,0.5)] transition-all duration-1000 ease-out"></div>
+            </div>
+        </div>
+
+        <h3 class="font-headline text-xl font-bold text-on-surface mb-6 px-2 tracking-tight uppercase">Sua Jornada</h3>
+
+        <!-- Journey Map Container -->
+        <div class="path-container" id="journey-container">
+            
+            <!-- SVG Line (Drawn dynamically via JS) -->
+            <svg id="journey-svg" class="absolute top-0 left-0 w-full h-full pointer-events-none" style="z-index: 0;">
+                <path id="connection-line" fill="none" stroke="#484847" stroke-dasharray="8 8" stroke-width="3" class="transition-all duration-500"></path>
+            </svg>
+
+            <!-- Node 1: Completed -->
+            <div class="node-wrapper js-node" data-status="completed" data-day="Dia 1-3" data-xp="50">
+                <div class="node-content">
+                    <div class="node-circle bg-success shadow-[0_0_15px_rgba(34,197,94,0.4)] js-node-circle">
+                        <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">check</span>
+                    </div>
+                    <div class="mt-2 text-center js-node-text">
+                        <span class="font-label text-xs text-on-surface-variant block uppercase font-bold tracking-widest">Dia 1-3</span>
+                        <div class="flex items-center justify-center gap-1 text-success mt-1">
+                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="font-label text-xs font-bold">+50 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Node 2: Completed -->
+            <div class="node-wrapper js-node" data-status="completed" data-day="Dia 4-7" data-xp="100">
+                <div class="node-content">
+                    <div class="node-circle bg-success shadow-[0_0_15px_rgba(34,197,94,0.4)] js-node-circle">
+                        <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">check</span>
+                    </div>
+                    <div class="mt-2 text-center js-node-text">
+                        <span class="font-label text-xs text-on-surface-variant block uppercase font-bold tracking-widest">Dia 4-7</span>
+                        <div class="flex items-center justify-center gap-1 text-success mt-1">
+                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="font-label text-xs font-bold">+100 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Node 3: Completed -->
+            <div class="node-wrapper js-node" data-status="completed" data-day="Dia 8-14" data-xp="150">
+                <div class="node-content">
+                    <div class="node-circle bg-success shadow-[0_0_15px_rgba(34,197,94,0.4)] js-node-circle">
+                        <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">check</span>
+                    </div>
+                    <div class="mt-2 text-center js-node-text">
+                        <span class="font-label text-xs text-on-surface-variant block uppercase font-bold tracking-widest">Dia 8-14</span>
+                        <div class="flex items-center justify-center gap-1 text-success mt-1">
+                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="font-label text-xs font-bold">+150 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Node 4: CURRENT (Interactive) -->
+            <div class="node-wrapper js-node" data-status="active" data-day="Dia 18" data-title="Hidratação & Limpeza" data-xp="200" id="current-node">
+                <div class="node-content">
+                    <div class="absolute -top-8 bg-surface-container-highest px-3 py-1 rounded-sm border border-outline-variant/20 shadow-lg js-hoje-badge transition-all">
+                        <span class="font-headline text-xs font-bold text-warning tracking-widest uppercase">HOJE</span>
+                    </div>
+                    <div class="node-circle bg-warning pulse-glow cursor-pointer hover:scale-105 transition-transform js-node-circle">
+                        <span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                    </div>
+                    <div class="mt-3 text-center js-node-text">
+                        <span class="font-headline text-sm text-on-surface font-bold">Hidratação & Limpeza</span>
+                        <span class="font-label text-xs text-on-surface-variant block mt-1">Toque para iniciar</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Node 5: Locked -->
+            <div class="node-wrapper opacity-40 js-node" data-status="locked" data-day="Dia 19" data-title="Avaliação da Pele" data-xp="250">
+                <div class="node-content">
+                    <div class="node-circle bg-surface-container-high border-2 border-outline-variant/50 js-node-circle">
+                        <span class="material-symbols-outlined text-on-surface-variant">lock</span>
+                    </div>
+                    <div class="mt-2 text-center js-node-text">
+                        <span class="font-label text-xs text-on-surface-variant block uppercase font-bold tracking-widest">Dia 19</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Node 6: Locked -->
+            <div class="node-wrapper opacity-40 js-node" data-status="locked" data-day="Dia 20" data-title="Hidratação" data-xp="300">
+                <div class="node-content">
+                    <div class="node-circle bg-surface-container-high border-2 border-outline-variant/50 js-node-circle">
+                        <span class="material-symbols-outlined text-on-surface-variant">lock</span>
+                    </div>
+                    <div class="mt-2 text-center js-node-text">
+                        <span class="font-label text-xs text-on-surface-variant block uppercase font-bold tracking-widest">Dia 20</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- BottomNavBar -->
+    <nav class="fixed bottom-0 left-0 w-full z-50 backdrop-blur-xl bg-opacity-90 border-t shadow-[0_-4px_40px_rgba(230,57,70,0.06)] px-4 py-3 pb-8 md:pb-3 flex justify-around items-center" style="background-color: #0e0e0e; border-top-color: #262626;">
+        <button class="js-action-btn flex flex-col items-center justify-center text-[#555] hover:text-white transition-colors duration-200" data-action="Abrindo Dashboard">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+        </button>
+        <button class="flex flex-col items-center justify-center relative scale-110 active:scale-95 transition-transform">
+            <div class="bg-[#e63946]/15 p-3 rounded-xl border border-[#e63946]/30 shadow-[0_0_15px_rgba(230,57,70,0.2)]">
+                <span class="material-symbols-outlined text-[#e63946]" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+            </div>
+        </button>
+        <button class="js-action-btn flex flex-col items-center justify-center text-[#555] hover:text-white transition-colors duration-200" data-action="Abrindo Instruções">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">description</span>
+        </button>
+        <button class="js-action-btn flex flex-col items-center justify-center text-[#555] hover:text-white transition-colors duration-200" data-action="Abrindo Perfil">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+        </button>
+    </nav>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-24 w-full max-w-md z-[100] pointer-events-none flex flex-col items-center"></div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. Toast Notification System ---
+            function showToast(message, icon = 'info') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                
+                toast.className = `flex items-center gap-3 px-6 py-4 rounded-full shadow-2xl toast-animate pointer-events-auto bg-surface-container-highest border border-white/10 mb-2`;
+                toast.innerHTML = `
+                    <span class="material-symbols-outlined text-primary">${icon}</span>
+                    <span class="text-xs font-headline font-bold uppercase tracking-widest text-white">${message}</span>
+                `;
+                
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-20px) translateX(-50%)';
+                    toast.style.transition = 'all 0.3s ease';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            // Bind Navigation Buttons
+            document.querySelectorAll('.js-action-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showToast(btn.getAttribute('data-action'), 'bolt');
+                });
+            });
+
+
+            // --- 2. Dynamic Zigzag Line Drawing ---
+            function drawConnectionLine() {
+                const circles = document.querySelectorAll('.js-node-circle');
+                const path = document.getElementById('connection-line');
+                const container = document.getElementById('journey-container');
+                
+                if (circles.length < 2) return;
+
+                const containerRect = container.getBoundingClientRect();
+                let d = "";
+
+                circles.forEach((circle, index) => {
+                    const rect = circle.getBoundingClientRect();
+                    // Calculate center of the circle relative to the container
+                    const x = (rect.left + rect.width / 2) - containerRect.left;
+                    const y = (rect.top + rect.height / 2) - containerRect.top;
+
+                    if (index === 0) {
+                        d += `M ${x} ${y} `;
+                    } else {
+                        d += `L ${x} ${y} `;
+                    }
+                });
+
+                path.setAttribute('d', d);
+            }
+
+            // Draw line on load and resize
+            drawConnectionLine();
+            window.addEventListener('resize', drawConnectionLine);
+
+
+            // --- 3. Journey Progression Logic ---
+            let currentDayCount = 18;
+            const nodes = document.querySelectorAll('.js-node');
+
+            // Find the initially active node and add click listener
+            function setupActiveNode() {
+                const activeNode = document.querySelector('.js-node[data-status="active"]');
+                if (activeNode) {
+                    const circle = activeNode.querySelector('.js-node-circle');
+                    
+                    // Remove old listener if exists to prevent duplicates
+                    const newCircle = circle.cloneNode(true);
+                    circle.parentNode.replaceChild(newCircle, circle);
+                    
+                    newCircle.addEventListener('click', handleTaskCompletion);
+                }
+            }
+
+            function handleTaskCompletion() {
+                const activeNode = document.querySelector('.js-node[data-status="active"]');
+                if (!activeNode) return;
+
+                const xp = activeNode.getAttribute('data-xp');
+                const dayLabel = activeNode.getAttribute('data-day');
+
+                // 1. Loading Toast
+                showToast("Registrando cuidado diário...", "sync");
+
+                // Simulate API Call / Processing
+                setTimeout(() => {
+                    
+                    // 2. Transform Active Node -> Completed
+                    activeNode.setAttribute('data-status', 'completed');
+                    
+                    // Move the "HOJE" badge out
+                    const badge = activeNode.querySelector('.js-hoje-badge');
+                    if (badge) badge.remove();
+
+                    // Change circle to Green Check
+                    const circle = activeNode.querySelector('.js-node-circle');
+                    circle.className = "node-circle bg-success shadow-[0_0_15px_rgba(34,197,94,0.4)] js-node-circle";
+                    circle.innerHTML = `<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">check</span>`;
+                    
+                    // Change text to show XP
+                    const textContainer = activeNode.querySelector('.js-node-text');
+                    textContainer.innerHTML = `
+                        <span class="font-label text-xs text-on-surface-variant block uppercase font-bold tracking-widest">${dayLabel}</span>
+                        <div class="flex items-center justify-center gap-1 text-success mt-1">
+                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="font-label text-xs font-bold">+${xp} XP</span>
+                        </div>
+                    `;
+
+                    // 3. Transform Next Node (Locked) -> Active
+                    const nextNode = document.querySelector('.js-node[data-status="locked"]');
+                    if (nextNode) {
+                        nextNode.setAttribute('data-status', 'active');
+                        nextNode.classList.remove('opacity-40');
+                        
+                        const nextTitle = nextNode.getAttribute('data-title');
+                        const nextCircle = nextNode.querySelector('.js-node-circle');
+                        const nextTextContainer = nextNode.querySelector('.js-node-text');
+
+                        // Make it orange, pulsing play button
+                        nextCircle.className = "node-circle bg-warning pulse-glow cursor-pointer hover:scale-105 transition-transform js-node-circle";
+                        nextCircle.innerHTML = `<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>`;
+                        
+                        // Add title and "HOJE" badge
+                        nextTextContainer.innerHTML = `
+                            <span class="font-headline text-sm text-on-surface font-bold">${nextTitle}</span>
+                            <span class="font-label text-xs text-on-surface-variant block mt-1">Toque para iniciar</span>
+                        `;
+                        
+                        // Re-inject badge
+                        const newBadge = document.createElement('div');
+                        newBadge.className = "absolute -top-8 bg-surface-container-highest px-3 py-1 rounded-sm border border-outline-variant/20 shadow-lg js-hoje-badge animate-bounce";
+                        newBadge.innerHTML = `<span class="font-headline text-xs font-bold text-warning tracking-widest uppercase">HOJE</span>`;
+                        nextNode.querySelector('.node-content').insertBefore(newBadge, nextCircle);
+                    }
+
+                    // 4. Update Top Progress Bar
+                    currentDayCount++;
+                    document.getElementById('days-count').innerText = currentDayCount;
+                    const newProgress = Math.min((currentDayCount / 30) * 100, 100);
+                    document.getElementById('progress-bar').style.width = `${newProgress}%`;
+
+                    // 5. Success Toast
+                    showToast(`Bom trabalho! +${xp} XP Ganhos.`, "auto_awesome");
+
+                    // 6. Re-bind events and redraw lines
+                    setupActiveNode();
+                    drawConnectionLine();
+
+                }, 800);
+            }
+
+            // Init
+            setupActiveNode();
+        });
+    </script>
+</body>
+</html>

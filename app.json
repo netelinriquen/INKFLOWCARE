@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "InkFlowCare",
+    "slug": "INKAPP",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/FAVORICON-INKFLOW-WHITE.png",
+    "scheme": "inkapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0e0e0e",
+        "foregroundImage": "./assets/images/adaptive-icon.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.theets07.INKAPP"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/FAVORICON-INKFLOW-WHITE.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/FAVORICON-INKFLOW-WHITE.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#0e0e0e",
+          "dark": {
+            "image": "./assets/images/FAVORICON-INKFLOW-WHITE.png",
+            "backgroundColor": "#0e0e0e"
+          }
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O InkFlowCare precisa acessar sua galeria para atualizar sua foto de perfil."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b0be5592-b2fb-4d44-900a-4b9fb27b593f"
+      }
+    }
+  }
+}
