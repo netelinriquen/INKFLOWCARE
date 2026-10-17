@@ -8,6 +8,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import api from '@/services/api';
 import { useAuth } from '@/context/auth';
+import { clearCicatrizacaoCache } from '@/hooks/useCicatrizacao';
 
 const locais = ['Braço', 'Perna', 'Costas', 'Peito', 'Pescoço', 'Mão', 'Pé', 'Outro'];
 
@@ -20,6 +21,7 @@ export default function NovaTatuagemScreen() {
   const [tamanho, setTamanho] = useState('');
   const [obs, setObs] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sucesso, setSucesso] = useState(false);
 
   async function handleSalvar() {
     if (!nome.trim()) { Alert.alert('Atenção', 'Informe o nome da tatuagem.'); return; }
@@ -43,7 +45,8 @@ export default function NovaTatuagemScreen() {
         largura,
         altura,
       });
-      router.back();
+      clearCicatrizacaoCache();
+      setSucesso(true);
     } catch (err: any) {
       console.log('Erro detalhado:', err.response?.data || err.message);
       Alert.alert('Erro', `Erro interno: ${JSON.stringify(err.response?.data || err.message)}`);
@@ -54,6 +57,18 @@ export default function NovaTatuagemScreen() {
 
   return (
     <View style={styles.container}>
+      {sucesso && (
+        <View style={styles.overlay}>
+          <View style={styles.overlayCard}>
+            <Ionicons name="checkmark-circle" size={56} color="#ff8d8c" />
+            <Text style={styles.overlayTitle}>Tatuagem Adicionada!</Text>
+            <Text style={styles.overlayMsg}>Sua tatuagem foi cadastrada com sucesso. O plano de cuidados de 30 dias foi iniciado.</Text>
+            <Pressable style={styles.overlayBtn} onPress={() => router.back()}>
+              <Text style={styles.overlayBtnText}>OK</Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
       <SafeAreaView style={styles.safe} edges={['top']}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flex}>
           
@@ -225,4 +240,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff8d8c', borderRadius: 12, height: 56,
   },
   salvarBtnText: { color: '#0e0e0e', fontSize: 15, fontWeight: '800', letterSpacing: 0.5 },
+
+  overlay: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    justifyContent: 'center', alignItems: 'center',
+    zIndex: 999, padding: 24,
+  },
+  overlayCard: {
+    backgroundColor: '#131313', borderRadius: 20, padding: 28,
+    width: '100%', maxWidth: 360, alignItems: 'center',
+    borderWidth: 1, borderColor: '#262626',
+  },
+  overlayTitle: { fontSize: 22, fontWeight: '700', color: '#fff', marginTop: 16, marginBottom: 12, textAlign: 'center' },
+  overlayMsg: { fontSize: 15, color: '#adaaaa', textAlign: 'center', lineHeight: 22, marginBottom: 28 },
+  overlayBtn: {
+    backgroundColor: '#ff8d8c', borderRadius: 12, height: 50,
+    justifyContent: 'center', alignItems: 'center', width: '100%',
+  },
+  overlayBtnText: { color: '#0e0e0e', fontSize: 15, fontWeight: '700' },
 });
