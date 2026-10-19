@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  KeyboardAvoidingView, Platform, Pressable,
+  ActivityIndicator, KeyboardAvoidingView, Platform, Pressable,
   ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -158,9 +158,22 @@ export default function NovaTatuagemScreen() {
               onPress={handleSalvar}
               disabled={loading}
             >
-              <Ionicons name="checkmark-circle-outline" size={22} color="#0e0e0e" />
-              <Text style={styles.salvarBtnText}>{loading ? 'CRIANDO...' : 'INICIAR ACOMPANHAMENTO'}</Text>
+              {loading ? (
+                <>
+                  <ActivityIndicator size="small" color="#0e0e0e" />
+                  <Text style={styles.salvarBtnText}>CRIANDO PLANO...</Text>
+                </>
+              ) : (
+                <>
+                  <Ionicons name="checkmark-circle-outline" size={22} color="#0e0e0e" />
+                  <Text style={styles.salvarBtnText}>INICIAR ACOMPANHAMENTO</Text>
+                </>
+              )}
             </Pressable>
+
+            {loading && (
+              <Text style={styles.loadingHint}>Isso pode levar alguns segundos...</Text>
+            )}
 
           </ScrollView>
         </KeyboardAvoidingView>
@@ -240,6 +253,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff8d8c', borderRadius: 12, height: 56,
   },
   salvarBtnText: { color: '#0e0e0e', fontSize: 15, fontWeight: '800', letterSpacing: 0.5 },
+  loadingHint: { color: '#666', fontSize: 13, textAlign: 'center', marginTop: 12 },
 
   overlay: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,

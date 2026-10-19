@@ -12,6 +12,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { useBadges } from '@/hooks/useBadges';
 import { useCicatrizacao } from '@/hooks/useCicatrizacao';
 import { useEstatisticas } from '@/hooks/useEstatisticas';
+import { useCaminho } from '@/hooks/useCaminho';
 import api from '@/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCustomAlert } from '@/context/AlertContext';
@@ -20,10 +21,15 @@ const TEMA_KEY = '@inkflow:tema_escuro';
 
 export default function PerfilScreen() {
   const router = useRouter();
-  const { logout, user } = useAuth();
+  const { logout, user, updateUser } = useAuth();
   const { badges, desbloqueadas, totalBadges } = useBadges(user?.id);
   const { cicatrizacao } = useCicatrizacao();
-  const { stats, xpTotal } = useEstatisticas(cicatrizacao?.id);
+  const { caminho } = useCaminho(cicatrizacao?.id || null);
+  const { stats } = useEstatisticas(cicatrizacao?.id);
+  const xpTotal = cicatrizacao?.xpTotal || 0;
+  const totalDias = cicatrizacao?.periodoTotalDias || 30;
+  const diasCompletos = caminho.filter(c => c.statusDia === 'COMPLETO').length;
+  const taxaConclusao = totalDias > 0 ? Math.round((diasCompletos / totalDias) * 100) : 0;
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [nomeEdit, setNomeEdit] = useState('');
@@ -131,6 +137,7 @@ export default function PerfilScreen() {
     }
     try {
       await api.put(`/clientes/${user?.id}`, { fullName: nomeEdit.trim(), telefone: user?.telefone });
+      await updateUser({ fullName: nomeEdit.trim(), nome: nomeEdit.trim() });
       setNome(nomeEdit.trim());
       setEmail(emailEdit.trim());
       setModalVisivel(false);
@@ -201,7 +208,7 @@ export default function PerfilScreen() {
               </View>
             </TouchableOpacity>
             <Text style={styles.nome}>{nome || 'Usuário'}</Text>
-            <Text style={styles.email}>{email || 'matheus@email.com'}</Text>
+            <Text style={styles.email}>{email || user?.email || ''}</Text>
             <TouchableOpacity style={styles.editBtn} onPress={abrirEditar} activeOpacity={0.7}>
               <Text style={styles.editBtnText}>Editar perfil</Text>
             </TouchableOpacity>
@@ -220,7 +227,7 @@ export default function PerfilScreen() {
             </View>
             <View style={styles.statDivider} />
             <View style={styles.statItem}>
-              <Text style={[styles.statNum, { color: '#22c55e' }]}>{stats.taxaConclusao}%</Text>
+              <Text style={[styles.statNum, { color: '#22c55e' }]}>{taxaConclusao}%</Text>
               <Text style={styles.statLabel}>CONCLUSÃO</Text>
             </View>
           </View>
@@ -236,7 +243,7 @@ export default function PerfilScreen() {
                   <TouchableOpacity key={t.id || `tattoo-${index}`} style={styles.tatuagemCard} activeOpacity={0.7}>
                     <View style={styles.tatuagemInfo}>
                       <Text style={styles.tatuagemNome}>{t.agendamento?.regiao || 'Tatuagem'}</Text>
-                      <Text style={styles.tatuagemSub}>{t.agendamento?.artista?.nome || 'Artista'} · {t.dataInicio ? new Date(t.dataInicio).toLocaleDateString('pt-BR') : ''}</Text>
+                      <Text style={styles.tatuagemSub}>{t.agendamento?.artista?.nome || 'Artista'} · {t.dataInicio ? new Date(t.dataInicio.split('T')[0] + 'T12:00:00').toLocaleDateString('pt-BR') : ''}</Text>
                     </View>
                     <View style={[
                       styles.statusBadge,

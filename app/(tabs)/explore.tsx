@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const fases = [
@@ -159,20 +159,10 @@ const faq = [
   { pergunta: 'Posso usar protetor solar?', resposta: 'Sim, mas só após a cicatrização superficial (após 2 semanas). Use FPS 50+ sempre que expor ao sol.' },
 ];
 
-const periodos = ['manha', 'tarde', 'noite'] as const;
-const periodoLabel = { manha: 'Manhã', tarde: 'Tarde', noite: 'Noite' };
-const periodoIcon = { manha: 'partly-sunny-outline', tarde: 'sunny-outline', noite: 'moon-outline' } as const;
-
 export default function CuidadosScreen() {
   const [faseAberta, setFaseAberta] = useState<number | null>(1);
-  const [periodoAtivo, setPeriodoAtivo] = useState<'manha' | 'tarde' | 'noite'>('manha');
-  const [checklistFeito, setChecklistFeito] = useState<Record<string, boolean>>({});
   const [faqAberta, setFaqAberta] = useState<number | null>(null);
   const [alertaAberto, setAlertaAberto] = useState<number | null>(null);
-
-  function toggleChecklist(key: string) {
-    setChecklistFeito((prev) => ({ ...prev, [key]: !prev[key] }));
-  }
 
   return (
     <View style={styles.container}>
@@ -212,54 +202,7 @@ export default function CuidadosScreen() {
                 <View style={styles.faseBody}>
                   <Text style={styles.faseDescricao}>{fase.descricao}</Text>
 
-                  {/* Seletor de período */}
-                  <View style={styles.periodoSelector}>
-                    {periodos.map((p) => (
-                      <TouchableOpacity
-                        key={p}
-                        style={[styles.periodoBtn, periodoAtivo === p && styles.periodoBtnAtivo]}
-                        onPress={() => setPeriodoAtivo(p)}
-                        activeOpacity={0.7}
-                      >
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                          <Ionicons name={periodoIcon[p]} size={14} color={periodoAtivo === p ? '#ff8d8c' : '#666'} />
-                          <Text style={[styles.periodoBtnText, periodoAtivo === p && styles.periodoBtnTextAtivo]}>
-                            {periodoLabel[p]}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-
-                  {/* Checklist do período */}
-                  <View style={styles.checklistTituloRow}>
-                    <Ionicons name={periodoIcon[periodoAtivo]} size={14} color="#999" />
-                    <Text style={[styles.checklistTitulo, { marginBottom: 0 }]}>CHECKLIST — {periodoLabel[periodoAtivo]}</Text>
-                  </View>
-                  {fase.rotina[periodoAtivo].map((item, i) => {
-                    const key = `${fase.id}-${periodoAtivo}-${i}`;
-                    const feito = !!checklistFeito[key];
-                    return (
-                      <TouchableOpacity
-                        key={key}
-                        style={[styles.checkItem, feito && styles.checkItemFeito]}
-                        onPress={() => toggleChecklist(key)}
-                        activeOpacity={0.7}
-                      >
-                        {feito ? (
-                          <View style={styles.checkBoxChecked}>
-                            <Ionicons name="checkmark" size={14} color="#fff" />
-                          </View>
-                        ) : (
-                          <View style={styles.checkBox} />
-                        )}
-                        <Text style={[styles.checkTexto, feito && styles.checkTextoFeito]}>{item}</Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-
-                  {/* Cuidados gerais da fase */}
-                  <View style={[styles.checklistTituloRow, { marginTop: 16 }]}>
+                  <View style={[styles.checklistTituloRow, { marginTop: 4 }]}>
                     <Ionicons name="warning-outline" size={14} color="#999" />
                     <Text style={[styles.checklistTitulo, { marginBottom: 0 }]}>EVITAR NESTA FASE</Text>
                   </View>
@@ -404,41 +347,9 @@ const styles = StyleSheet.create({
   },
   faseDescricao: { fontSize: 13, color: '#999', marginTop: 12, marginBottom: 14, lineHeight: 20 },
 
-  // Período selector
-  periodoSelector: { flexDirection: 'row', gap: 8, marginBottom: 14 },
-  periodoBtn: {
-    flex: 1, paddingVertical: 8, borderRadius: 8,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
-    alignItems: 'center',
-  },
-  periodoBtnAtivo: { backgroundColor: 'rgba(255,141,140,0.15)', borderColor: 'rgba(255,141,140,0.4)' },
-  periodoBtnText: { fontSize: 11, color: '#666', fontWeight: '600' },
-  periodoBtnTextAtivo: { color: '#ff8d8c' },
-
-  // Checklist
+  // Cuidados label
   checklistTituloRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
   checklistTitulo: { fontSize: 12, color: '#999', textTransform: 'uppercase', letterSpacing: 0.8 },
-  checkItem: {
-    flexDirection: 'row', alignItems: 'flex-start', gap: 12,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderRadius: 10, padding: 12, marginBottom: 6,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
-  },
-  checkItemFeito: { opacity: 0.45 },
-  checkBox: {
-    width: 22, height: 22, borderRadius: 11,
-    borderWidth: 2, borderColor: '#555',
-    marginTop: 1,
-  },
-  checkBoxChecked: {
-    width: 22, height: 22, borderRadius: 11,
-    backgroundColor: '#ff8d8c',
-    justifyContent: 'center', alignItems: 'center',
-    marginTop: 1,
-  },
-  checkTexto: { fontSize: 13, color: '#ddd', flex: 1, lineHeight: 19 },
-  checkTextoFeito: { textDecorationLine: 'line-through', color: '#555' },
 
   // Cuidados
   cuidadoItem: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 },

@@ -33,8 +33,8 @@ export default function CaminhoScreen() {
   const semCicatrizacao = !cicatrizacao && !cicLoading;
 
   const totalDias = cicatrizacao?.periodoTotalDias || 30;
-  const diaAtual = cicatrizacao?.diaAtual || 0;
-  const progresso = totalDias > 0 ? Math.round((diaAtual / totalDias) * 100) : 0;
+  const diasCompletos = caminho.filter(c => c.statusDia === 'COMPLETO').length;
+  const progresso = totalDias > 0 ? Math.round((diasCompletos / totalDias) * 100) : 0;
   const faseAtual = cicatrizacao?.faseAtual ? (faseNomes[cicatrizacao.faseAtual] || 'Em progresso') : '';
 
   function handleNodePress(checkpoint: any) {
@@ -100,7 +100,7 @@ export default function CaminhoScreen() {
                     </Text>
                   </View>
                   <View style={styles.progressDays}>
-                    <Text style={styles.progressDaysNumber}>{diaAtual}</Text>
+                    <Text style={styles.progressDaysNumber}>{diasCompletos}</Text>
                     <Text style={styles.progressDaysTotal}>/{totalDias} dias</Text>
                   </View>
                 </View>
@@ -264,6 +264,12 @@ function NodeItem({ checkpoint, index, onPress, isCurrentDay }: any) {
               <Text style={styles.nodeTitle}>Cuidados do dia</Text>
               <Text style={styles.nodeSubtitle}>Toque para iniciar</Text>
             </>
+          )}
+          {[7, 14, 21, 28].includes(numeroDia) && (
+            <View style={styles.quizBadge}>
+              <Ionicons name="school" size={10} color="#FFD700" />
+              <Text style={styles.quizBadgeText}>QUIZ</Text>
+            </View>
           )}
         </View>
       </View>
@@ -468,6 +474,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#adaaaa',
     marginTop: 2,
+  },
+
+  quizBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+    backgroundColor: 'rgba(255,215,0,0.15)',
+    borderWidth: 1, borderColor: 'rgba(255,215,0,0.3)',
+    borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2,
+    marginTop: 4,
+  },
+  quizBadgeText: {
+    fontSize: 9, fontWeight: '700', color: '#FFD700', letterSpacing: 1,
   },
 
   // Dashed connection line

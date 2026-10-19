@@ -1,11 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCicatrizacao } from '@/hooks/useCicatrizacao';
 import { useChecklist } from '@/hooks/useChecklist';
-import { useFotos } from '@/hooks/useFotos';
+import { useCaminho } from '@/hooks/useCaminho';
 import api from '@/services/api';
 
 const periodoNomes: Record<string, string> = {
@@ -59,7 +59,8 @@ export default function DiaScreen() {
     cicatrizacao?.id || null,
     numeroDia
   );
-  const { pickAndUpload, uploading } = useFotos(cicatrizacao?.id);
+  const { caminho } = useCaminho(cicatrizacao?.id || null);
+  const checkpointDia = caminho.find(c => c.numeroDia === numeroDia);
 
   // Dicas do backend
   const [dicasBackend, setDicasBackend] = useState<{titulo: string; descricao: string; icone: string}[]>([]);
@@ -92,9 +93,8 @@ export default function DiaScreen() {
 
   const temQuiz = [7, 14, 21, 28].includes(numeroDia);
 
-  // XP e estrelas baseado no progresso
-  const estrelas = progresso >= 100 ? 3 : progresso >= 50 ? 2 : progresso > 0 ? 1 : 0;
-  const xpGanho = Math.round(progresso * 2);
+  const estrelas = checkpointDia?.estrelas ?? (progresso >= 100 ? 3 : progresso >= 50 ? 2 : progresso > 0 ? 1 : 0);
+  const xpGanho = checkpointDia?.xpGanho ?? 0;
 
   async function handleToggle(itemId: number) {
     await toggleItem(itemId);
@@ -118,6 +118,14 @@ export default function DiaScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
+
+          {/* Aviso de Quiz */}
+          {temQuiz && (
+            <View style={styles.quizBanner}>
+              <Ionicons name="school" size={20} color="#FFD700" />
+              <Text style={styles.quizBannerText}>Hoje tem quiz! Complete os cuidados e responda ao final.</Text>
+            </View>
+          )}
 
           {/* Card de Resumo */}
           <View style={styles.summaryCard}>
@@ -257,8 +265,8 @@ export default function DiaScreen() {
           </View>
 
           {/* Ações */}
-          <View style={styles.actionsRow}>
-            {temQuiz && (
+          {temQuiz && (
+            <View style={styles.actionsRow}>
               <TouchableOpacity
                 style={styles.actionBtn}
                 onPress={() => router.push(`/quiz/${numeroDia}` as any)}
@@ -266,19 +274,8 @@ export default function DiaScreen() {
                 <Ionicons name="school-outline" size={20} color="#FFD700" />
                 <Text style={styles.actionBtnText}>Quiz do Dia</Text>
               </TouchableOpacity>
-            )}
-            <TouchableOpacity
-              style={[styles.actionBtn, uploading && { opacity: 0.5 }]}
-              disabled={uploading}
-              onPress={async () => {
-                const ok = await pickAndUpload(numeroDia, `Dia ${numeroDia}`);
-                if (ok) Alert.alert('Foto salva!', 'Sua foto de evolução foi registrada.');
-              }}
-            >
-              <Ionicons name="camera-outline" size={20} color="#3B82F6" />
-              <Text style={styles.actionBtnText}>{uploading ? 'Enviando...' : 'Adicionar Foto'}</Text>
-            </TouchableOpacity>
-          </View>
+            </View>
+          )}
 
         </ScrollView>
       </SafeAreaView>
@@ -350,6 +347,14 @@ const styles = StyleSheet.create({
     fontSize: 18, fontWeight: '700',
     color: '#ff8d8c', letterSpacing: 2,
   },
+
+  quizBanner: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    backgroundColor: 'rgba(255,215,0,0.08)',
+    borderWidth: 1, borderColor: 'rgba(255,215,0,0.25)',
+    borderRadius: 12, padding: 14, marginTop: 16,
+  },
+  quizBannerText: { flex: 1, fontSize: 13, color: '#FFD700', fontWeight: '600', lineHeight: 18 },
 
   // Summary Card (XP, Stars, Status)
   summaryCard: {

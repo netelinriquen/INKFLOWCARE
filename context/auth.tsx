@@ -19,6 +19,7 @@ type AuthContextType = {
   login: (email: string, senha: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<void>;
   authenticate: (token: string, userData: User) => Promise<void>;
+  updateUser: (data: Partial<User>) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -97,8 +98,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLogado(true);
   }
 
+  async function updateUser(data: Partial<User>) {
+    const updated = { ...user, ...data } as User;
+    await AsyncStorage.setItem('@inkflow:user', JSON.stringify(updated));
+    setUser(updated);
+  }
+
   return (
-    <AuthContext.Provider value={{ logado, user, loading, login, logout, authenticate }}>
+    <AuthContext.Provider value={{ logado, user, loading, login, logout, authenticate, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

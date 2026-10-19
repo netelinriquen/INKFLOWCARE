@@ -1,11 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, Pressable } from 'react-native';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/auth';
 import { useCicatrizacao } from '@/hooks/useCicatrizacao';
 import { useChecklist } from '@/hooks/useChecklist';
+import { useCaminho } from '@/hooks/useCaminho';
 
 const periodoHoras: Record<string, string> = {
   MANHA: '08:00',
@@ -25,8 +27,11 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const { cicatrizacao, refetch } = useCicatrizacao();
+  const { caminho } = useCaminho(cicatrizacao?.id || null);
 
-  const { checklist, toggleItem } = useChecklist(
+  useFocusEffect(useCallback(() => { refetch(true); }, []));
+
+  const { checklist } = useChecklist(
     cicatrizacao?.id || null,
     cicatrizacao?.diaAtual || 1
   );
@@ -37,21 +42,16 @@ export default function HomeScreen() {
     feito: item.concluido,
   }));
 
-  const feitos = lembretesAtivos.filter((l) => l.feito).length;
   const semCicatrizacao = !cicatrizacao;
 
-  // Dados reais da cicatrização
-  const diaAtual = cicatrizacao?.diaAtual || 0;
   const totalDias = cicatrizacao?.periodoTotalDias || 30;
-  const progressoPct = totalDias > 0 ? Math.round((diaAtual / totalDias) * 100) : 0;
-  const diasRestantes = totalDias - diaAtual;
+  const diasCompletos = caminho.filter(c => c.statusDia === 'COMPLETO').length;
+  const progressoPct = totalDias > 0 ? Math.round((diasCompletos / totalDias) * 100) : 0;
+  const diasRestantes = totalDias - diasCompletos;
+  const xpTotal = cicatrizacao?.xpTotal || 0;
   const faseNome = cicatrizacao?.faseAtual ? (faseNomes[cicatrizacao.faseAtual] || 'Em progresso') : '';
 
   const [notifModalVisible, setNotifModalVisible] = useState(false);
-
-  async function toggleLembrete(id: number) {
-    await toggleItem(id);
-  }
 
   function handleNotificacoes() {
     setNotifModalVisible(true);
@@ -125,12 +125,20 @@ export default function HomeScreen() {
 
               <View style={styles.cardInfo}>
                 <View style={styles.cardInfoItem}>
+                  <Text style={styles.cardInfoLabel}>Dia Atual</Text>
+                  <Text style={styles.cardInfoValue}>Dia {cicatrizacao.diaAtual || 1}</Text>
+                </View>
+                <View style={styles.cardInfoItem}>
                   <Text style={styles.cardInfoLabel}>Progresso</Text>
-                  <Text style={styles.cardInfoValue}>{diaAtual}/{totalDias} dias</Text>
+                  <Text style={styles.cardInfoValue}>{diasCompletos}/{totalDias} dias</Text>
                 </View>
                 <View style={styles.cardInfoItem}>
                   <Text style={styles.cardInfoLabel}>Restante</Text>
                   <Text style={[styles.cardInfoValue, styles.cardInfoValueRed]}>{diasRestantes} dias</Text>
+                </View>
+                <View style={styles.cardInfoItem}>
+                  <Text style={styles.cardInfoLabel}>XP Total</Text>
+                  <Text style={[styles.cardInfoValue, { color: '#FFD700' }]}>{xpTotal} XP</Text>
                 </View>
                 <View style={styles.cardInfoItem}>
                   <Text style={styles.cardInfoLabel}>Artista</Text>
@@ -143,7 +151,7 @@ export default function HomeScreen() {
                   <Text style={styles.cardInfoLabel}>Início</Text>
                   <View style={styles.cardInfoRow}>
                     <Ionicons name="calendar-outline" size={14} color="#999" />
-                    <Text style={styles.cardInfoValue}>{cicatrizacao.dataInicio ? new Date(cicatrizacao.dataInicio).toLocaleDateString('pt-BR') : 'N/A'}</Text>
+                    <Text style={styles.cardInfoValue}>{cicatrizacao.dataInicio ? new Date(cicatrizacao.dataInicio.split('T')[0] + 'T12:00:00').toLocaleDateString('pt-BR') : 'N/A'}</Text>
                   </View>
                 </View>
               </View>
@@ -155,35 +163,17 @@ export default function HomeScreen() {
             <>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Lembretes de hoje</Text>
-                <Text style={styles.sectionCounter}>{feitos}/{lembretesAtivos.length} feitos</Text>
-              </View>
-
-              <View style={styles.thinProgressBar}>
-                <View style={[styles.thinProgressFill, { width: `${lembretesAtivos.length > 0 ? (feitos / lembretesAtivos.length) * 100 : 0}%` }]} />
               </View>
 
               <View style={styles.lembretesContainer}>
                 {lembretesAtivos.map((l) => (
-                  <TouchableOpacity
-                    key={l.id}
-                    style={styles.lembrete}
-                    onPress={() => toggleLembrete(l.id)}
-                    activeOpacity={0.7}
-                  >
-                    {l.feito ? (
-                      <View style={styles.checkboxChecked}>
-                        <Ionicons name="checkmark" size={16} color="#fff" />
-                      </View>
-                    ) : (
-                      <View style={styles.checkboxUnchecked} />
-                    )}
-                    <View style={[styles.lembreteTextRow, l.feito && { opacity: 0.5 }]}>
-                      <Text style={[styles.lembreteTitulo, l.feito && styles.lembreteTextoFeito]}>
-                        {l.titulo}
-                      </Text>
+                  <View key={l.id} style={styles.lembrete}>
+                    <Ionicons name="time-outline" size={18} color="#ff8d8c" />
+                    <View style={styles.lembreteTextRow}>
+                      <Text style={styles.lembreteTitulo}>{l.titulo}</Text>
                       <Text style={styles.lembreteHora}>{l.hora}</Text>
                     </View>
-                  </TouchableOpacity>
+                  </View>
                 ))}
               </View>
             </>
